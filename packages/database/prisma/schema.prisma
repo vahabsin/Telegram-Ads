@@ -68,6 +68,14 @@ enum AdStatus {
   OUT_OF_BUDGET
 }
 
+// What status.PENDING_REVIEW should flip to once an admin approves it (docs/PRD.md section 2.3
+// step 5: "فعال" starts immediately after approval, "تعلیق" waits for the advertiser to activate
+// it manually). Not itself an Ad.status value - see docs/DECISIONS.md ADR-009.
+enum AdInitialStatusChoice {
+  ACTIVE
+  PAUSED
+}
+
 enum PayoutStatus {
   PENDING
   APPROVED
@@ -199,6 +207,7 @@ model Ad {
   mediaType             AdMediaType @default(NONE)
   showAdvertiserAvatar  Boolean     @default(false)
   status                AdStatus    @default(DRAFT)
+  initialStatusChoice   AdInitialStatusChoice @default(ACTIVE)
   rejectionReason       String?
   dailyViewLimitPerUser Int
   budgetTotalCoins      BigInt

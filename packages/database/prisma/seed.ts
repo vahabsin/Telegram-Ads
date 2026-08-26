@@ -42,6 +42,8 @@ async function main() {
     { key: "maxCpm", value: 1000000 },
     // TODO(compliance): legal/compliance should review this list before launch, not just engineering.
     { key: "restrictedCountries", value: ["KP", "SY", "CU"] },
+    // TODO(real-money): confirm real Stars exchange rate with the user before launch - see docs/DECISIONS.md ADR-007.
+    { key: "coinsPerStar", value: 100 },
   ];
 
   for (const setting of platformSettings) {

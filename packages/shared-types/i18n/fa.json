@@ -8,5 +8,6 @@
   "menu_support": "💬 پشتیبانی",
   "menu_change_language": "🌐 تغییر زبان",
   "app_not_configured": "اپلیکیشن هنوز آماده نیست، بعداً دوباره امتحان کن.",
+  "stars_deposit_success": "✅ {{amount}} سکه به کیف پول شما اضافه شد.",
   "unknown_command": "متوجه نشدم. از دکمه‌های منو استفاده کن یا /start رو بزن."
 }

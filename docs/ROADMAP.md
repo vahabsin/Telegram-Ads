@@ -30,12 +30,12 @@
 - [x] Dockerfile برای bot + افزودن به docker-compose — build شد و موفق بود (تست runtime واقعی ممکن نشد، شبکه به api.telegram.org در این sandbox مسدوده — TODO.md)
 
 ## فاز ۳ — پوسته Mini App + کیف پول (شروع با Stars)
-- [ ] راه‌اندازی `apps/miniapp` (React+Vite+Tailwind) + اتصال Telegram WebApp SDK
-- [ ] صفحه ورود/احراز هویت خودکار با initData
-- [ ] صفحه Dashboard خالی (طبق PRD بخش ۲.۲) با حالت "هنوز تبلیغی ندارید"
-- [ ] صفحه کیف پول: نمایش موجودی + دکمه شارژ
-- [ ] پیاده‌سازی کامل پرداخت با **Telegram Stars** (`sendInvoice` + `pre_checkout_query` + `successful_payment`) — اولین و ساده‌ترین روش پرداخت end-to-end
-- [ ] تست کامل مسیر: کاربر شارژ می‌کنه با Stars -> موجودی افزایش پیدا می‌کنه -> تراکنش در تاریخچه دیده می‌شه
+- [x] راه‌اندازی `apps/miniapp` (React+Vite+Tailwind) + اتصال Telegram WebApp SDK (اسکریپت رسمی، بدون پکیج ثالث — ADR-008)
+- [x] صفحه ورود/احراز هویت خودکار با initData
+- [x] صفحه Dashboard خالی (طبق PRD بخش ۲.۲) با حالت "هنوز تبلیغی ندارید"
+- [x] صفحه کیف پول: نمایش موجودی + دکمه شارژ + تاریخچه‌ی تراکنش‌ها
+- [x] پیاده‌سازی کامل پرداخت با **Telegram Stars** (`createInvoiceLink` سمت API + `pre_checkout_query` + `successful_payment` سمت bot) — کد کامل و end-to-end از نظر منطقی نوشته و unit-test شده
+- [x] تست: منطق قیمت‌گذاری Stars، تجزیه‌ی payload، و اعتبارسنجی کیف‌پول یونیت‌تست شدن؛ مسیر کامل زنده (پرداخت واقعی داخل تلگرام) در این sandbox قابل اجرا نبود (شبکه مسدود + عدم دسترسی به کلاینت واقعی تلگرام) — TODO.md
 
 ## فاز ۴ — ساخت تبلیغ (Wizard کامل)
 - [ ] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM)

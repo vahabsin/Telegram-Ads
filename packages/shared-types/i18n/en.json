@@ -8,5 +8,6 @@
   "menu_support": "💬 Support",
   "menu_change_language": "🌐 Change Language",
   "app_not_configured": "The app isn't ready yet, please try again later.",
+  "stars_deposit_success": "✅ {{amount}} coins were added to your wallet.",
   "unknown_command": "I didn't understand that. Use the menu buttons or send /start."
 }

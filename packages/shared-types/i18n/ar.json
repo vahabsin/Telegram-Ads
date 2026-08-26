@@ -8,5 +8,6 @@
   "menu_support": "💬 الدعم",
   "menu_change_language": "🌐 تغيير اللغة",
   "app_not_configured": "التطبيق غير جاهز بعد، حاول لاحقاً.",
+  "stars_deposit_success": "✅ تمت إضافة {{amount}} عملة إلى محفظتك.",
   "unknown_command": "لم أفهم ذلك. استخدم أزرار القائمة أو أرسل /start."
 }

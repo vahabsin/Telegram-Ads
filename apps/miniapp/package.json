@@ -3,10 +3,26 @@
   "private": true,
   "version": "0.0.1",
   "description": "React + Vite Telegram Mini App: dashboard, ad wizard, wallet, profile (see docs/ARCHITECTURE.md #3)",
+  "type": "module",
   "scripts": {
-    "lint": "echo \"[miniapp] no source yet (phase 3)\"",
-    "typecheck": "echo \"[miniapp] no source yet (phase 3)\"",
-    "build": "echo \"[miniapp] no source yet (phase 3)\"",
-    "test": "echo \"[miniapp] no tests yet (phase 3)\""
+    "start:dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" -c ../../eslint.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "echo \"[miniapp] no tests yet\""
+  },
+  "dependencies": {
+    "@telegram-ads/shared-types": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10"
   }
 }

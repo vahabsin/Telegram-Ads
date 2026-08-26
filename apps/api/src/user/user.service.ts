@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { createWallet } from "@telegram-ads/database";
 import type { LanguageCode } from "@telegram-ads/shared-types";
 import { PrismaService } from "../prisma/prisma.service";
-import { WalletService } from "../wallet/wallet.service";
 
 export interface FindOrCreateFromTelegramInput {
   telegramId: bigint;
@@ -12,10 +12,7 @@ export interface FindOrCreateFromTelegramInput {
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly walletService: WalletService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /** Finds a user by Telegram id, refreshing their profile, or creates one (with a wallet). */
   async findOrCreateFromTelegram(input: FindOrCreateFromTelegramInput) {
@@ -43,7 +40,7 @@ export class UserService {
           languageCode: input.languageCode,
         },
       });
-      await this.walletService.createWallet(user.id, tx);
+      await createWallet(tx, user.id);
       return user;
     });
   }

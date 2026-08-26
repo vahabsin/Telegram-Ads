@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "lint": "echo \"[config] nothing to lint yet\"",
+    "lint": "eslint \"src/**/*.ts\" -c ../../eslint.config.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "echo \"[config] no build step - consumed as TS source via workspace\""
   },

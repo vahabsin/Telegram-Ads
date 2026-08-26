@@ -53,3 +53,26 @@ Per the user's 2026-08-27 instruction to decide undocumented values autonomously
 - `restrictedCountries = ["KP", "SY", "CU"]` — a small illustrative sample per `docs/PRD.md` section 2.3 ("پیش‌فرض چند کشور نمونه"), deliberately not including Iran itself since this is an Iran-facing platform. `TODO(compliance)`: needs an actual legal/compliance review before launch, not just an engineering guess.
 
 All of the above are edited in the admin panel (`PlatformSetting` CRUD, phase 6) without a redeploy, so none of this is a one-way door.
+
+## ADR-006: Wallet mutation logic lives in `packages/database`, not `apps/api`
+
+**Date:** 2026-08-27
+**Phase:** 3
+
+Phase 3 needs the Telegram Stars `successful_payment` handler (in `apps/bot`, which has no NestJS DI container) to credit the same wallet using the exact same atomic/idempotent logic `apps/api`'s `WalletService` uses for every other mutation - duplicating that logic would be exactly the kind of divergence CLAUDE.md's financial-safety rules exist to prevent. Moved the actual `creditWallet`/`debitWallet`/`createWallet`/`getBalanceCoins` implementation into `packages/database/src/wallet.ts` as plain functions with no `@nestjs/common` dependency (they throw plain `InvalidAmountError`/`InsufficientBalanceError`). `apps/api/src/wallet/wallet.service.ts` is now a thin adapter that calls these functions and translates those errors into `BadRequestException`/`ConflictException`; `apps/bot` calls them directly with the shared `prisma` singleton. Single source of truth for the one piece of logic that must never diverge.
+
+## ADR-007: Telegram Stars exchange rate (`coinsPerStar`)
+
+**Date:** 2026-08-27
+**Phase:** 3
+
+Telegram Stars (XTR) need a coins-per-Star conversion to price a deposit invoice. Unlike an internal "coin," a Star has real-world value set by Telegram/Apple/Google that fluctuates, so this isn't a value to confidently hardcode. Seeded `PlatformSetting.coinsPerStar = 100` (1 Star buys 100 coins) as an explicit, clearly-round placeholder. `TODO(real-money)`: confirm the real target rate with the user before real Stars payments go live - trivial to change since it's read from `PlatformSetting` at invoice-creation time, not compiled in.
+
+## ADR-008: Miniapp uses the official inline Telegram WebApp script, no router library yet
+
+**Date:** 2026-08-27
+**Phase:** 3
+
+`docs/ARCHITECTURE.md` says `apps/miniapp` should be "سازگار با Telegram WebApp SDK" without naming a specific npm package. Used the official `<script src="https://telegram.org/js/telegram-web-app.js">` (per Telegram's own docs) plus a small hand-written ambient type + wrapper (`src/telegram.ts`), instead of a third-party wrapper package like `@twa-dev/sdk` - avoids picking an unlisted dependency for something the official script already covers.
+
+Phase 3 only needs two screens (Dashboard, Wallet), so view switching is a local `useState` in `App.tsx` rather than pulling in `react-router` (not mentioned in `docs/ARCHITECTURE.md`). Revisit once phase 4's ad wizard needs real multi-step routing/deep-linking.

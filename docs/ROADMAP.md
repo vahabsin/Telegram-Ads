@@ -14,8 +14,8 @@
 - [x] `README.md` اولیه با توضیح راه‌اندازی محیط dev
 
 ## فاز ۱ — دیتابیس و هسته‌ی بک‌اند
-- [~] نوشتن Prisma schema کامل طبق `ARCHITECTURE.md` بخش ۳
-- [ ] اولین migration + seed داده‌ی اولیه (دسته‌بندی‌ها، PlatformSetting پیش‌فرض)
+- [x] نوشتن Prisma schema کامل طبق `ARCHITECTURE.md` بخش ۳
+- [x] اولین migration + seed دسته‌بندی‌ها — seed مقادیر `PlatformSetting` عمداً خالی گذاشته شد چون تصمیم پولی واقعیه؛ کاربر گفت فعلاً صبر کنیم (قبل از فاز ۶/۸ باید تعیین بشه)
 - [ ] راه‌اندازی پروژه NestJS در `apps/api` با ماژول `HealthCheck`
 - [ ] پیاده‌سازی اعتبارسنجی `initData` تلگرام + صدور JWT (`AuthModule`)
 - [ ] `UserModule` + `WalletModule` (فقط CRUD پایه، بدون منطق پرداخت هنوز)

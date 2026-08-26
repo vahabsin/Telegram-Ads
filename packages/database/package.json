@@ -20,5 +20,8 @@
   "devDependencies": {
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   }
 }

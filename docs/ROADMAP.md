@@ -9,7 +9,7 @@
 - [x] پیکربندی ESLint + Prettier مشترک
 - [x] `docker-compose.yml` برای Postgres + Redis (محیط dev)
 - [x] فایل `.env.example` کامل با توضیح هر متغیر
-- [~] راه‌اندازی ریپازیتوری GitHub + `.gitignore` مناسب (node_modules, .env, dist, ...) — گیت لوکال مستقل ساخته شد (`docs/DECISIONS.md` ADR-002)؛ منتظر لینک ریپوی GitHub از کاربر برای push
+- [x] راه‌اندازی ریپازیتوری GitHub + `.gitignore` مناسب (node_modules, .env, dist, ...) — متصل و push شد به https://github.com/vahabsin/Telegram-Ads
 - [x] GitHub Actions اولیه: lint + typecheck روی هر PR
 - [x] `README.md` اولیه با توضیح راه‌اندازی محیط dev
 
@@ -89,4 +89,4 @@
 ---
 
 ### وضعیت کلی فعلی
-فاز ۰ تقریباً تکمیل شده؛ فقط منتظر لینک ریپوی GitHub از کاربر برای اتصال remote و push هستیم. تا اون موقع وارد فاز ۱ نمی‌شیم.
+فاز ۰ کامل شد. منتظر تأیید صریح کاربر برای شروع فاز ۱ (دیتابیس و هسته‌ی بک‌اند) هستیم.

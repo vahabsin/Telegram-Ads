@@ -1,0 +1,12 @@
+{
+  "name": "@telegram-ads/api",
+  "private": true,
+  "version": "0.0.1",
+  "description": "NestJS backend: REST API + WebSocket gateway (see docs/ARCHITECTURE.md #1, #5)",
+  "scripts": {
+    "lint": "echo \"[api] no source yet (phase 1)\"",
+    "typecheck": "echo \"[api] no source yet (phase 1)\"",
+    "build": "echo \"[api] no source yet (phase 1)\"",
+    "test": "echo \"[api] no tests yet (phase 1)\""
+  }
+}

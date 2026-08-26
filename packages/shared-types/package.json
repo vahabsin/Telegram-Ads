@@ -1,0 +1,11 @@
+{
+  "name": "@telegram-ads/shared-types",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Shared DTOs, enums, Zod validation schemas, and i18n locale files (see docs/ARCHITECTURE.md #6)",
+  "scripts": {
+    "lint": "echo \"[shared-types] no source yet (phase 1)\"",
+    "typecheck": "echo \"[shared-types] no source yet (phase 1)\"",
+    "build": "echo \"[shared-types] no source yet (phase 1)\""
+  }
+}

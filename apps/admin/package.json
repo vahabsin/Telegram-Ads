@@ -1,0 +1,12 @@
+{
+  "name": "@telegram-ads/admin",
+  "private": true,
+  "version": "0.0.1",
+  "description": "React admin panel: moderation queue, categories, settings, audit log (see docs/ARCHITECTURE.md #6)",
+  "scripts": {
+    "lint": "echo \"[admin] no source yet (phase 6)\"",
+    "typecheck": "echo \"[admin] no source yet (phase 6)\"",
+    "build": "echo \"[admin] no source yet (phase 6)\"",
+    "test": "echo \"[admin] no tests yet (phase 6)\""
+  }
+}

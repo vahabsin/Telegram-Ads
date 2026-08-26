@@ -1,0 +1,12 @@
+{
+  "name": "@telegram-ads/miniapp",
+  "private": true,
+  "version": "0.0.1",
+  "description": "React + Vite Telegram Mini App: dashboard, ad wizard, wallet, profile (see docs/ARCHITECTURE.md #3)",
+  "scripts": {
+    "lint": "echo \"[miniapp] no source yet (phase 3)\"",
+    "typecheck": "echo \"[miniapp] no source yet (phase 3)\"",
+    "build": "echo \"[miniapp] no source yet (phase 3)\"",
+    "test": "echo \"[miniapp] no tests yet (phase 3)\""
+  }
+}

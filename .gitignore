@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# Env files (never commit real secrets)
+.env
+.env.*
+!.env.example
+
+# Prisma
+packages/database/generated/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor/OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings (machine-specific, not shared)
+.claude/settings.local.json
+
+# Docker volumes data (if bind-mounted locally)
+docker/volumes/
+
+# Test coverage
+coverage/

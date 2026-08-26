@@ -1,0 +1,11 @@
+{
+  "name": "@telegram-ads/config",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Shared env loading and validation via zod (see docs/ARCHITECTURE.md #2)",
+  "scripts": {
+    "lint": "echo \"[config] no source yet (phase 1)\"",
+    "typecheck": "echo \"[config] no source yet (phase 1)\"",
+    "build": "echo \"[config] no source yet (phase 1)\""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@telegram-ads/bot",
+  "private": true,
+  "version": "0.0.1",
+  "description": "grammY Telegram bot: /start, menus, ad-creation wizard entrypoint (see docs/ARCHITECTURE.md #2)",
+  "scripts": {
+    "lint": "echo \"[bot] no source yet (phase 2)\"",
+    "typecheck": "echo \"[bot] no source yet (phase 2)\"",
+    "build": "echo \"[bot] no source yet (phase 2)\"",
+    "test": "echo \"[bot] no tests yet (phase 2)\""
+  }
+}

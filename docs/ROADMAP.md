@@ -15,11 +15,11 @@
 
 ## فاز ۱ — دیتابیس و هسته‌ی بک‌اند
 - [x] نوشتن Prisma schema کامل طبق `ARCHITECTURE.md` بخش ۳
-- [x] اولین migration + seed دسته‌بندی‌ها — seed مقادیر `PlatformSetting` عمداً خالی گذاشته شد چون تصمیم پولی واقعیه؛ کاربر گفت فعلاً صبر کنیم (قبل از فاز ۶/۸ باید تعیین بشه)
-- [ ] راه‌اندازی پروژه NestJS در `apps/api` با ماژول `HealthCheck`
-- [ ] پیاده‌سازی اعتبارسنجی `initData` تلگرام + صدور JWT (`AuthModule`)
-- [ ] `UserModule` + `WalletModule` (فقط CRUD پایه، بدون منطق پرداخت هنوز)
-- [ ] تست واحد برای اعتبارسنجی initData و منطق کیف پول پایه
+- [x] اولین migration + seed دسته‌بندی‌ها و `PlatformSetting` (کمیسیون ۲۰٪ طبق دستور کاربر؛ بقیه‌ی مقادیر placeholder با TODO — `docs/DECISIONS.md` ADR-005)
+- [x] راه‌اندازی پروژه NestJS در `apps/api` با ماژول `HealthCheck` (تست شد: `GET /health` واقعاً بالا اومد)
+- [x] پیاده‌سازی اعتبارسنجی `initData` تلگرام + صدور JWT (`AuthModule`) — end-to-end با bot token واقعی تست شد
+- [x] `UserModule` + `WalletModule` (فقط CRUD پایه، بدون منطق پرداخت هنوز) — شامل credit/debit idempotent برای استفاده در فازهای بعدی
+- [x] تست واحد برای اعتبارسنجی initData (۱۱ تست) و منطق کیف پول پایه (۷ تست) — پوشش این دو فایل core به‌ترتیب ~۹۸٪ و ~۸۸٪
 
 ## فاز ۲ — ربات تلگرام (هسته)
 - [ ] راه‌اندازی `apps/bot` با grammY + اتصال به همون دیتابیس (از طریق `packages/database`)

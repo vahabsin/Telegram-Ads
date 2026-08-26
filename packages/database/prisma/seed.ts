@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/client";
+import { Prisma, PrismaClient } from "../generated/client";
 
 const prisma = new PrismaClient();
 
@@ -27,14 +27,31 @@ async function main() {
   }
   console.log(`Seeded ${categories.length} categories.`);
 
-  // NOTE: PlatformSetting (coinToTomanRate, platformCommissionPercent, minPayoutAmount, ...)
-  // is intentionally NOT seeded here. These are real-money decisions per CLAUDE.md section 2
-  // item 3 and must be confirmed with the user before any value is stored. See docs/ROADMAP.md
-  // phase 1 and docs/DECISIONS.md.
-  console.log(
-    "Skipped PlatformSetting seed: coinToTomanRate/platformCommissionPercent/minPayoutAmount " +
-      "require a real-money decision from the user before they can be set (see docs/DECISIONS.md).",
-  );
+  // Launch-default PlatformSetting values. platformCommissionPercent=20 was explicitly set by
+  // the user. Every other value here is a reasonable-default engineering decision, NOT a final
+  // business decision - each is logged with rationale in docs/DECISIONS.md ADR-005, and the
+  // TODO markers below flag which ones must be replaced with real figures before real money
+  // moves through them (see docs/ROADMAP.md phases 6/8).
+  const platformSettings: Array<{ key: string; value: unknown }> = [
+    { key: "platformCommissionPercent", value: 20 },
+    // TODO(real-money): confirm final coin<->Toman rate with the user before phase 8 (Rial gateway).
+    { key: "coinToTomanRate", value: 1 },
+    // TODO(real-money): confirm minimum payout amount with the user before phase 7/8 go live.
+    { key: "minPayoutAmount", value: 100000 },
+    { key: "minCpm", value: 1000 },
+    { key: "maxCpm", value: 1000000 },
+    // TODO(compliance): legal/compliance should review this list before launch, not just engineering.
+    { key: "restrictedCountries", value: ["KP", "SY", "CU"] },
+  ];
+
+  for (const setting of platformSettings) {
+    await prisma.platformSetting.upsert({
+      where: { key: setting.key },
+      update: { value: setting.value as Prisma.InputJsonValue },
+      create: { key: setting.key, value: setting.value as Prisma.InputJsonValue },
+    });
+  }
+  console.log(`Seeded ${platformSettings.length} platform settings (see docs/DECISIONS.md ADR-005).`);
 }
 
 main()

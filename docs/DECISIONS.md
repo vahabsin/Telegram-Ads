@@ -38,3 +38,18 @@ Consequence: JavaScript's `JSON.stringify` cannot serialize `BigInt`. `apps/api`
 **Phase:** 1
 
 `docs/ARCHITECTURE.md` left `AdTargeting.targetChannelIds` as "(relation یا رشته‌ی لینک‌های وارد‌شده)" — an explicit either/or. Implemented `targetChannelHandles` / `excludeChannelHandles` as `String[]` (usernames or t.me links) rather than a relation to the `Channel` model, because per `docs/PRD.md` section 2.3 step 3, an advertiser can type in *any* channel username/link as a target — it does not need to already be registered as a Publisher `Channel` in our system. Category targeting (`AdTargetCategory`/`AdExcludeCategory`) does use a proper relation, since `Category` is a fixed taxonomy we control.
+
+## ADR-005: Launch-default `PlatformSetting` values
+
+**Date:** 2026-08-27
+**Phase:** 1
+
+Per the user's 2026-08-27 instruction to decide undocumented values autonomously (using standard practice) rather than stopping, and to flag anything that will need real data later with a `TODO`, seeded `PlatformSetting` with:
+
+- `platformCommissionPercent = 20` — **explicit user instruction**, not a guess (80% publisher / 20% platform, a common marketplace/ad-network split).
+- `coinToTomanRate = 1` (1 coin = 1 Toman) — inferred from `docs/PRD.md` section 2.4's own quick-deposit buttons (20,000 / 50,000 / 100,000 / 300,000), which read naturally as Toman amounts. `TODO(real-money)`: confirm with the user before phase 8 (Rial gateway) goes live — this is exactly the "coin-to-Toman rate" CLAUDE.md flags as a real-money decision.
+- `minPayoutAmount = 100000` coins (100,000 Toman at the above rate) — a plausible minimum withdrawal for an Iranian consumer platform, in line with typical local app minimums. `TODO(real-money)`: confirm with the user before phase 7/8 go live.
+- `minCpm = 1000`, `maxCpm = 1000000` coins — wide operational bounds so early advertisers aren't blocked; tunable later via the admin panel (phase 6) without a migration.
+- `restrictedCountries = ["KP", "SY", "CU"]` — a small illustrative sample per `docs/PRD.md` section 2.3 ("پیش‌فرض چند کشور نمونه"), deliberately not including Iran itself since this is an Iran-facing platform. `TODO(compliance)`: needs an actual legal/compliance review before launch, not just an engineering guess.
+
+All of the above are edited in the admin panel (`PlatformSetting` CRUD, phase 6) without a redeploy, so none of this is a one-way door.

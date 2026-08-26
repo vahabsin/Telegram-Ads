@@ -3,9 +3,14 @@
   "private": true,
   "version": "0.0.1",
   "description": "Shared DTOs, enums, Zod validation schemas, and i18n locale files (see docs/ARCHITECTURE.md #6)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "lint": "echo \"[shared-types] no source yet (phase 1)\"",
-    "typecheck": "echo \"[shared-types] no source yet (phase 1)\"",
-    "build": "echo \"[shared-types] no source yet (phase 1)\""
+    "lint": "echo \"[shared-types] nothing to lint yet\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "echo \"[shared-types] no build step - consumed as TS source via workspace\""
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
   }
 }

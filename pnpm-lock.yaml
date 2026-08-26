@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: ^20.16.11
+        version: 20.19.43
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.15.0
         version: 8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5)(typescript@5.9.3))(eslint@9.39.5)(typescript@5.9.3)
@@ -35,7 +38,11 @@ importers:
 
   apps/miniapp: {}
 
-  packages/config: {}
+  packages/config:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
   packages/database:
     dependencies:
@@ -50,7 +57,11 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@26.3.0)(typescript@5.9.3)
 
-  packages/shared-types: {}
+  packages/shared-types:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
 packages:
 
@@ -167,6 +178,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/json-schema/-/json-schema-7.0.15.tgz}
+
+  '@types/node@20.19.43':
+    resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/node/-/node-20.19.43.tgz}
 
   '@types/node@26.3.0':
     resolution: {integrity: sha512-L3fgrnchriRC2ExBflb8j4uZZURHZfQsmQeyVzhjcHW4kkwVyo8/0h1B2MVzMTrYUJYu6G7EWs14hW/L9putqw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/node/-/node-26.3.0.tgz}
@@ -593,6 +607,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/undici-types/-/undici-types-6.21.0.tgz}
+
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/undici-types/-/undici-types-8.3.0.tgz}
 
@@ -618,6 +635,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/yocto-queue/-/yocto-queue-0.1.0.tgz}
     engines: {node: '>=10'}
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/zod/-/zod-3.25.76.tgz}
 
 snapshots:
 
@@ -732,6 +752,10 @@ snapshots:
   '@types/estree@1.0.9': {}
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/node@20.19.43':
+    dependencies:
+      undici-types: 6.21.0
 
   '@types/node@26.3.0':
     dependencies:
@@ -1154,6 +1178,8 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  undici-types@6.21.0: {}
+
   undici-types@8.3.0: {}
 
   uri-js@4.4.1:
@@ -1171,3 +1197,5 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.25.76: {}

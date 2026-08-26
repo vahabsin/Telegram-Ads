@@ -1,0 +1,334 @@
+// Prisma schema per docs/ARCHITECTURE.md section 3.
+// Money fields are always BigInt "coins" (integer), never Float — see docs/DECISIONS.md ADR-003.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum WalletTransactionType {
+  DEPOSIT
+  WITHDRAW
+  AD_SPEND
+  PUBLISHER_EARNING
+  REFUND
+}
+
+enum WalletTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  RIAL
+  STARS
+  CRYPTO_TRC20
+  INTERNAL
+}
+
+enum ChannelType {
+  CHANNEL
+  BOT
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum AdPlacementType {
+  CHANNELS
+  BOTS
+  SEARCH
+  USERS
+}
+
+enum AdMediaType {
+  IMAGE
+  VIDEO
+  NONE
+}
+
+enum AdStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  PAUSED
+  REJECTED
+  COMPLETED
+  OUT_OF_BUDGET
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum AdminRole {
+  SUPERADMIN
+  MODERATOR
+  FINANCE
+}
+
+enum ActorType {
+  ADMIN
+  SYSTEM
+}
+
+// --- Models ---
+
+model User {
+  id            String   @id @default(cuid())
+  telegramId    BigInt   @unique
+  username      String?
+  firstName     String?
+  languageCode  String   @default("fa")
+  isAdvertiser  Boolean  @default(false)
+  isPublisher   Boolean  @default(false)
+  isBanned      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  wallet         Wallet?
+  channels       Channel[]
+  ads            Ad[]
+  payoutRequests PayoutRequest[]
+
+  @@map("users")
+}
+
+model Wallet {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  balanceCoins  BigInt   @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id])
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id              String                   @id @default(cuid())
+  walletId        String
+  type            WalletTransactionType
+  amountCoins     BigInt
+  status          WalletTransactionStatus @default(PENDING)
+  paymentMethod   PaymentMethod
+  externalRef     String?
+  idempotencyKey  String                   @unique
+  createdAt       DateTime                 @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId, createdAt])
+  @@map("wallet_transactions")
+}
+
+model Category {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  nameFa   String
+  nameEn   String
+  nameAr   String
+  parentId String?
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+
+  channelCategories  ChannelCategory[]
+  adTargetCategories AdTargetCategory[]
+  adExcludeCategories AdExcludeCategory[]
+
+  @@map("categories")
+}
+
+model Channel {
+  id                 String              @id @default(cuid())
+  ownerId            String
+  telegramChatId     BigInt              @unique
+  username           String?
+  type               ChannelType
+  title              String
+  subscriberCount    Int                 @default(0)
+  languageCode       String?
+  minAcceptedCpm     BigInt              @default(0)
+  verificationStatus VerificationStatus  @default(PENDING)
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+
+  owner       User              @relation(fields: [ownerId], references: [id])
+  categories  ChannelCategory[]
+  impressions AdImpression[]
+
+  @@map("channels")
+}
+
+model ChannelCategory {
+  channelId  String
+  categoryId String
+
+  channel  Channel  @relation(fields: [channelId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([channelId, categoryId])
+  @@map("channel_categories")
+}
+
+model Ad {
+  id                    String      @id @default(cuid())
+  advertiserId          String
+  placementType         AdPlacementType
+  title                 String
+  bodyText              String
+  targetUrl             String
+  mediaUrl              String?
+  mediaType             AdMediaType @default(NONE)
+  showAdvertiserAvatar  Boolean     @default(false)
+  status                AdStatus    @default(DRAFT)
+  rejectionReason       String?
+  dailyViewLimitPerUser Int
+  budgetTotalCoins      BigInt
+  budgetSpentCoins      BigInt      @default(0)
+  cpmCoins              BigInt
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  advertiser  User           @relation(fields: [advertiserId], references: [id])
+  targeting   AdTargeting?
+  impressions AdImpression[]
+
+  @@map("ads")
+}
+
+// Targeting by category uses relations to the fixed Category taxonomy.
+// Targeting by channel uses free-text usernames/links (advertisers can target
+// a channel that isn't registered as a Publisher Channel in our system yet) —
+// see docs/ARCHITECTURE.md section 3 "(relation یا رشته‌ی لینک‌های وارد‌شده)"
+// and docs/DECISIONS.md ADR-004.
+model AdTargeting {
+  id                     String   @id @default(cuid())
+  adId                   String   @unique
+  targetLanguages        String[]
+  targetChannelHandles   String[]
+  excludeChannelHandles  String[]
+  excludedCountries      String[]
+
+  ad                 Ad                  @relation(fields: [adId], references: [id])
+  targetCategories   AdTargetCategory[]
+  excludeCategories  AdExcludeCategory[]
+
+  @@map("ad_targetings")
+}
+
+model AdTargetCategory {
+  adTargetingId String
+  categoryId    String
+
+  adTargeting AdTargeting @relation(fields: [adTargetingId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
+
+  @@id([adTargetingId, categoryId])
+  @@map("ad_target_categories")
+}
+
+model AdExcludeCategory {
+  adTargetingId String
+  categoryId    String
+
+  adTargeting AdTargeting @relation(fields: [adTargetingId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
+
+  @@id([adTargetingId, categoryId])
+  @@map("ad_exclude_categories")
+}
+
+model AdImpression {
+  id               String   @id @default(cuid())
+  adId             String
+  channelId        String?
+  viewerTelegramId BigInt
+  costCoins        BigInt
+  createdAt        DateTime @default(now())
+
+  ad      Ad       @relation(fields: [adId], references: [id])
+  channel Channel? @relation(fields: [channelId], references: [id])
+  clicks  AdClick[]
+
+  @@index([adId, viewerTelegramId, createdAt])
+  @@map("ad_impressions")
+}
+
+model AdClick {
+  id               String   @id @default(cuid())
+  impressionId     String
+  adId             String
+  viewerTelegramId BigInt
+  createdAt        DateTime @default(now())
+
+  impression AdImpression @relation(fields: [impressionId], references: [id])
+
+  @@map("ad_clicks")
+}
+
+model PayoutRequest {
+  id           String        @id @default(cuid())
+  publisherId  String
+  amountCoins  BigInt
+  method       PaymentMethod
+  destination  String
+  status       PayoutStatus  @default(PENDING)
+  adminNote    String?
+  createdAt    DateTime      @default(now())
+
+  publisher User @relation(fields: [publisherId], references: [id])
+
+  @@map("payout_requests")
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  totpSecret   String?
+  role         AdminRole
+  createdAt    DateTime  @default(now())
+
+  @@map("admin_users")
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  actorType  ActorType
+  actorId    String
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json
+  createdAt  DateTime  @default(now())
+
+  @@index([targetType, targetId])
+  @@map("audit_logs")
+}
+
+// Key-value platform settings editable without a redeploy, e.g. coinToTomanRate,
+// platformCommissionPercent, minCpm, maxCpm, restrictedCountries, minPayoutAmount.
+model PlatformSetting {
+  key   String @id
+  value Json
+
+  @@map("platform_settings")
+}

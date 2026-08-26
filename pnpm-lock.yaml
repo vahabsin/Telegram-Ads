@@ -37,11 +37,26 @@ importers:
 
   packages/config: {}
 
-  packages/database: {}
+  packages/database:
+    dependencies:
+      '@prisma/client':
+        specifier: ^5.22.0
+        version: 5.22.0(prisma@5.22.0)
+    devDependencies:
+      prisma:
+        specifier: ^5.22.0
+        version: 5.22.0
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@26.3.0)(typescript@5.9.3)
 
   packages/shared-types: {}
 
 packages:
+
+  '@cspotcode/source-map-support@0.8.1':
+    resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz}
+    engines: {node: '>=12'}
 
   '@eslint-community/eslint-utils@4.10.1':
     resolution: {integrity: sha512-cuadcxVFE8sDK6iWJbs8Sn0av2Nrh2QSGQhVlBW9AaAHqHwjWsZHT8LJ4hFGPh7ASBV2deFdM7H/DPjulmh8rg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@eslint-community/eslint-utils/-/eslint-utils-4.10.1.tgz}
@@ -101,11 +116,60 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@humanwhocodes/retry/-/retry-0.4.3.tgz}
     engines: {node: '>=18.18'}
 
+  '@jridgewell/resolve-uri@3.1.2':
+    resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz}
+    engines: {node: '>=6.0.0'}
+
+  '@jridgewell/sourcemap-codec@1.5.5':
+    resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz}
+
+  '@jridgewell/trace-mapping@0.3.9':
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@prisma/client@5.22.0':
+    resolution: {integrity: sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@prisma/client/-/client-5.22.0.tgz}
+    engines: {node: '>=16.13'}
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+
+  '@prisma/debug@5.22.0':
+    resolution: {integrity: sha512-AUt44v3YJeggO2ZU5BkXI7M4hu9BF2zzH2iF2V5pyXT/lRTyWiElZ7It+bRH1EshoMRxHgpYg4VB6rCM+mG5jQ==}
+
+  '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2':
+    resolution: {integrity: sha512-2PTmxFR2yHW/eB3uqWtcgRcgAbG1rwG9ZriSvQw+nnb7c4uCr3RAcGMb6/zfE88SKlC1Nj2ziUvc96Z379mHgQ==}
+
+  '@prisma/engines@5.22.0':
+    resolution: {integrity: sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA==}
+
+  '@prisma/fetch-engine@5.22.0':
+    resolution: {integrity: sha512-bkrD/Mc2fSvkQBV5EpoFcZ87AvOgDxbG99488a5cexp5Ccny+UM6MAe/UFkUC0wLYD9+9befNOqGiIJhhq+HbA==}
+
+  '@prisma/get-platform@5.22.0':
+    resolution: {integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==}
+
+  '@tsconfig/node10@1.0.13':
+    resolution: {integrity: sha512-gcLdvR9HO1ZJBypsOGqaP6TFEzb6vIta0KSTLt9NAQ6pXQO3cRgSVyCN6pzYqI9DlJgY71XKO0dpDhCf08b3pg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@tsconfig/node10/-/node10-1.0.13.tgz}
+
+  '@tsconfig/node12@1.0.11':
+    resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@tsconfig/node12/-/node12-1.0.11.tgz}
+
+  '@tsconfig/node14@1.0.3':
+    resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@tsconfig/node14/-/node14-1.0.3.tgz}
+
+  '@tsconfig/node16@1.0.4':
+    resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@tsconfig/node16/-/node16-1.0.4.tgz}
+
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/estree/-/estree-1.0.9.tgz}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/json-schema/-/json-schema-7.0.15.tgz}
+
+  '@types/node@26.3.0':
+    resolution: {integrity: sha512-L3fgrnchriRC2ExBflb8j4uZZURHZfQsmQeyVzhjcHW4kkwVyo8/0h1B2MVzMTrYUJYu6G7EWs14hW/L9putqw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@types/node/-/node-26.3.0.tgz}
 
   '@typescript-eslint/eslint-plugin@8.68.0':
     resolution: {integrity: sha512-WASHDpCm6qO5jj9g1a+8NiW5+GCkAyLReR56/4VruYmNgfUmqpxOfZ2Yfb8xGfJPWv5Qi6LSD8sXdces3vbp/Q==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.68.0.tgz}
@@ -171,6 +235,10 @@ packages:
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
 
+  acorn-walk@8.3.5:
+    resolution: {integrity: sha512-HEHNfbars9v4pgpW6SO1KSPkfoS0xVOM/9UzkJltjlsHZmJasxg8aXkuZa7SMf8vKGIBhpUsPluQSqhJFCqebw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/acorn-walk/-/acorn-walk-8.3.5.tgz}
+    engines: {node: '>=0.4.0'}
+
   acorn@8.18.0:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/acorn/-/acorn-8.18.0.tgz}
     engines: {node: '>=0.4.0'}
@@ -182,6 +250,9 @@ packages:
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/ansi-styles/-/ansi-styles-4.3.0.tgz}
     engines: {node: '>=8'}
+
+  arg@4.1.3:
+    resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/arg/-/arg-4.1.3.tgz}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/argparse/-/argparse-2.0.1.tgz}
@@ -218,6 +289,9 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
+  create-require@1.1.1:
+    resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/create-require/-/create-require-1.1.1.tgz}
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/cross-spawn/-/cross-spawn-7.0.6.tgz}
     engines: {node: '>= 8'}
@@ -233,6 +307,10 @@ packages:
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/deep-is/-/deep-is-0.1.4.tgz}
+
+  diff@4.0.4:
+    resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/diff/-/diff-4.0.4.tgz}
+    engines: {node: '>=0.3.1'}
 
   escape-string-regexp@4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz}
@@ -324,6 +402,11 @@ packages:
   flatted@3.4.4:
     resolution: {integrity: sha512-5+ybhBZANEJxaH3X5evAFatUxLfEHSr7n6kYJ+1Qd0mUqr4eu9gIf6GDbWHf8RJijHrjjO8G+la14SlL2SeS1Q==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/flatted/-/flatted-3.4.4.tgz}
 
+  fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   glob-parent@6.0.2:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/glob-parent/-/glob-parent-6.0.2.tgz}
     engines: {node: '>=10.13.0'}
@@ -390,6 +473,9 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/lodash.merge/-/lodash.merge-4.6.2.tgz}
 
+  make-error@1.3.6:
+    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/make-error/-/make-error-1.3.6.tgz}
+
   minimatch@10.2.6:
     resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/minimatch/-/minimatch-10.2.6.tgz}
     engines: {node: 18 || 20 || >=22}
@@ -440,6 +526,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prisma@5.22.0:
+    resolution: {integrity: sha512-vtpjW3XuYCSnMsNVBjLMNkTj6OZbudcPPTPYHqX0CJfpcdWciI1dM8uHETwmDxxiqEwCIE6WvXucWUetJgfu/A==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/prisma/-/prisma-5.22.0.tgz}
+    engines: {node: '>=16.13'}
+    hasBin: true
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/punycode/-/punycode-2.3.1.tgz}
     engines: {node: '>=6'}
@@ -479,6 +570,20 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
+  ts-node@10.9.2:
+    resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/ts-node/-/ts-node-10.9.2.tgz}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/type-check/-/type-check-0.4.0.tgz}
     engines: {node: '>= 0.8.0'}
@@ -488,8 +593,14 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/undici-types/-/undici-types-8.3.0.tgz}
+
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/uri-js/-/uri-js-4.4.1.tgz}
+
+  v8-compile-cache-lib@3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/v8-compile-cache-lib/-/v8-compile-cache-lib-3.0.1.tgz}
 
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/which/-/which-2.0.2.tgz}
@@ -500,11 +611,19 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/word-wrap/-/word-wrap-1.2.5.tgz}
     engines: {node: '>=0.10.0'}
 
+  yn@3.1.1:
+    resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
+    engines: {node: '>=6'}
+
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==, tarball: https://package-mirror.liara.ir/artifactory/api/npm/npm/yocto-queue/-/yocto-queue-0.1.0.tgz}
     engines: {node: '>=10'}
 
 snapshots:
+
+  '@cspotcode/source-map-support@0.8.1':
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.9
 
   '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5)':
     dependencies:
@@ -568,9 +687,55 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
+  '@jridgewell/resolve-uri@3.1.2': {}
+
+  '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@jridgewell/trace-mapping@0.3.9':
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@prisma/client@5.22.0(prisma@5.22.0)':
+    optionalDependencies:
+      prisma: 5.22.0
+
+  '@prisma/debug@5.22.0': {}
+
+  '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2': {}
+
+  '@prisma/engines@5.22.0':
+    dependencies:
+      '@prisma/debug': 5.22.0
+      '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
+      '@prisma/fetch-engine': 5.22.0
+      '@prisma/get-platform': 5.22.0
+
+  '@prisma/fetch-engine@5.22.0':
+    dependencies:
+      '@prisma/debug': 5.22.0
+      '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
+      '@prisma/get-platform': 5.22.0
+
+  '@prisma/get-platform@5.22.0':
+    dependencies:
+      '@prisma/debug': 5.22.0
+
+  '@tsconfig/node10@1.0.13': {}
+
+  '@tsconfig/node12@1.0.11': {}
+
+  '@tsconfig/node14@1.0.3': {}
+
+  '@tsconfig/node16@1.0.4': {}
+
   '@types/estree@1.0.9': {}
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/node@26.3.0':
+    dependencies:
+      undici-types: 8.3.0
 
   '@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5)(typescript@5.9.3))(eslint@9.39.5)(typescript@5.9.3)':
     dependencies:
@@ -667,6 +832,10 @@ snapshots:
     dependencies:
       acorn: 8.18.0
 
+  acorn-walk@8.3.5:
+    dependencies:
+      acorn: 8.18.0
+
   acorn@8.18.0: {}
 
   ajv@6.15.0:
@@ -679,6 +848,8 @@ snapshots:
   ansi-styles@4.3.0:
     dependencies:
       color-convert: 2.0.1
+
+  arg@4.1.3: {}
 
   argparse@2.0.1: {}
 
@@ -710,6 +881,8 @@ snapshots:
 
   concat-map@0.0.1: {}
 
+  create-require@1.1.1: {}
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -721,6 +894,8 @@ snapshots:
       ms: 2.1.3
 
   deep-is@0.1.4: {}
+
+  diff@4.0.4: {}
 
   escape-string-regexp@4.0.0: {}
 
@@ -822,6 +997,9 @@ snapshots:
 
   flatted@3.4.4: {}
 
+  fsevents@2.3.3:
+    optional: true
+
   glob-parent@6.0.2:
     dependencies:
       is-glob: 4.0.3
@@ -874,6 +1052,8 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
+  make-error@1.3.6: {}
+
   minimatch@10.2.6:
     dependencies:
       brace-expansion: 5.0.9
@@ -917,6 +1097,12 @@ snapshots:
 
   prettier@3.9.6: {}
 
+  prisma@5.22.0:
+    dependencies:
+      '@prisma/engines': 5.22.0
+    optionalDependencies:
+      fsevents: 2.3.3
+
   punycode@2.3.1: {}
 
   resolve-from@4.0.0: {}
@@ -944,20 +1130,44 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
+  ts-node@10.9.2(@types/node@26.3.0)(typescript@5.9.3):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.13
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 26.3.0
+      acorn: 8.18.0
+      acorn-walk: 8.3.5
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.4
+      make-error: 1.3.6
+      typescript: 5.9.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
 
   typescript@5.9.3: {}
 
+  undici-types@8.3.0: {}
+
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  v8-compile-cache-lib@3.0.1: {}
 
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
 
   word-wrap@1.2.5: {}
+
+  yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}

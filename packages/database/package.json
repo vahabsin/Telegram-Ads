@@ -3,9 +3,22 @@
   "private": true,
   "version": "0.0.1",
   "description": "Shared Prisma schema + generated client (see docs/ARCHITECTURE.md #3)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "lint": "echo \"[database] no schema yet (phase 1)\"",
-    "typecheck": "echo \"[database] no schema yet (phase 1)\"",
-    "build": "echo \"[database] no schema yet (phase 1)\""
+    "generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "ts-node --transpile-only prisma/seed.ts",
+    "lint": "echo \"[database] nothing to lint (prisma schema has its own formatter)\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2"
   }
 }

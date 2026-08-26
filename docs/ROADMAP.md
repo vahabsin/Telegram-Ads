@@ -4,14 +4,14 @@
 > ورود به فاز بعد فقط بعد از تکمیل کامل فاز فعلی مجاز است، مگر کاربر صریحاً دستور دیگری بده.
 
 ## فاز ۰ — راه‌اندازی پایه پروژه
-- [ ] ساخت ساختار مانوریپو (`apps/*`, `packages/*`) با pnpm workspaces یا turborepo
-- [ ] پیکربندی TypeScript strict مشترک (`tsconfig.base.json`)
-- [ ] پیکربندی ESLint + Prettier مشترک
-- [ ] `docker-compose.yml` برای Postgres + Redis (محیط dev)
-- [ ] فایل `.env.example` کامل با توضیح هر متغیر
-- [ ] راه‌اندازی ریپازیتوری GitHub + `.gitignore` مناسب (node_modules, .env, dist, ...)
-- [ ] GitHub Actions اولیه: lint + typecheck روی هر PR
-- [ ] `README.md` اولیه با توضیح راه‌اندازی محیط dev
+- [x] ساخت ساختار مانوریپو (`apps/*`, `packages/*`) با pnpm workspaces (تصمیم: `docs/DECISIONS.md` ADR-001)
+- [x] پیکربندی TypeScript strict مشترک (`tsconfig.base.json`)
+- [x] پیکربندی ESLint + Prettier مشترک
+- [x] `docker-compose.yml` برای Postgres + Redis (محیط dev)
+- [x] فایل `.env.example` کامل با توضیح هر متغیر
+- [~] راه‌اندازی ریپازیتوری GitHub + `.gitignore` مناسب (node_modules, .env, dist, ...) — گیت لوکال مستقل ساخته شد (`docs/DECISIONS.md` ADR-002)؛ منتظر لینک ریپوی GitHub از کاربر برای push
+- [x] GitHub Actions اولیه: lint + typecheck روی هر PR
+- [x] `README.md` اولیه با توضیح راه‌اندازی محیط dev
 
 ## فاز ۱ — دیتابیس و هسته‌ی بک‌اند
 - [ ] نوشتن Prisma schema کامل طبق `ARCHITECTURE.md` بخش ۳
@@ -89,4 +89,4 @@
 ---
 
 ### وضعیت کلی فعلی
-هیچ فازی هنوز شروع نشده. تسک بعدی: **فاز ۰**.
+فاز ۰ تقریباً تکمیل شده؛ فقط منتظر لینک ریپوی GitHub از کاربر برای اتصال remote و push هستیم. تا اون موقع وارد فاز ۱ نمی‌شیم.

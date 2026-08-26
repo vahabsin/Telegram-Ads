@@ -4,3 +4,8 @@ node_modules
 .turbo
 pnpm-lock.yaml
 packages/database/generated
+
+# Reference docs authored by the user - not auto-formatted
+CLAUDE.md
+README.md
+docs/*.md

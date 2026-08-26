@@ -51,7 +51,9 @@ async function main() {
       create: { key: setting.key, value: setting.value as Prisma.InputJsonValue },
     });
   }
-  console.log(`Seeded ${platformSettings.length} platform settings (see docs/DECISIONS.md ADR-005).`);
+  console.log(
+    `Seeded ${platformSettings.length} platform settings (see docs/DECISIONS.md ADR-005).`,
+  );
 }
 
 main()

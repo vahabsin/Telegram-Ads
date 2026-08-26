@@ -1,0 +1,12 @@
+{
+  "welcome": "👋 Hi {{name}}!\nWelcome to the Telegram Ads Platform.",
+  "choose_language": "🌐 Please choose your language:",
+  "language_saved": "✅ Your language is set to English.",
+  "main_menu_title": "Pick one from the menu below:",
+  "menu_open_app": "🚀 Open App",
+  "menu_channel": "📢 Channel",
+  "menu_support": "💬 Support",
+  "menu_change_language": "🌐 Change Language",
+  "app_not_configured": "The app isn't ready yet, please try again later.",
+  "unknown_command": "I didn't understand that. Use the menu buttons or send /start."
+}

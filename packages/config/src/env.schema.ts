@@ -11,6 +11,10 @@ export const envSchema = z.object({
   JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
   TELEGRAM_BOT_TOKEN: z.string().optional(),
   MINIAPP_URL: z.string().optional(),
+  // Optional external links shown in the bot's main menu (docs/ROADMAP.md phase 2). Left unset
+  // by default; apps/bot omits the corresponding menu button rather than linking somewhere fake.
+  PLATFORM_CHANNEL_URL: z.string().optional(),
+  PLATFORM_SUPPORT_URL: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

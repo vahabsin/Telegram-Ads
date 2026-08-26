@@ -4,9 +4,23 @@
   "version": "0.0.1",
   "description": "grammY Telegram bot: /start, menus, ad-creation wizard entrypoint (see docs/ARCHITECTURE.md #2)",
   "scripts": {
-    "lint": "echo \"[bot] no source yet (phase 2)\"",
-    "typecheck": "echo \"[bot] no source yet (phase 2)\"",
-    "build": "echo \"[bot] no source yet (phase 2)\"",
-    "test": "echo \"[bot] no tests yet (phase 2)\""
+    "start:dev": "ts-node src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "lint": "eslint \"src/**/*.ts\" -c ../../eslint.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@telegram-ads/config": "workspace:*",
+    "@telegram-ads/database": "workspace:*",
+    "@telegram-ads/shared-types": "workspace:*",
+    "grammy": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2"
   }
 }

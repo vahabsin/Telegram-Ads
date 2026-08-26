@@ -31,6 +31,24 @@ services:
       timeout: 5s
       retries: 10
 
+  bot:
+    build:
+      context: .
+      dockerfile: apps/bot/Dockerfile
+    container_name: tgads-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override host-facing values from .env with in-network service DNS names/ports.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tgads}:${POSTGRES_PASSWORD:-tgads_dev_password}@postgres:5432/${POSTGRES_DB:-tgads}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:

@@ -1,0 +1,12 @@
+{
+  "welcome": "👋 مرحباً {{name}}!\nأهلاً بك في منصة إعلانات تيليجرام.",
+  "choose_language": "🌐 الرجاء اختيار لغتك:",
+  "language_saved": "✅ تم ضبط لغتك على العربية.",
+  "main_menu_title": "اختر من القائمة أدناه:",
+  "menu_open_app": "🚀 فتح التطبيق",
+  "menu_channel": "📢 القناة",
+  "menu_support": "💬 الدعم",
+  "menu_change_language": "🌐 تغيير اللغة",
+  "app_not_configured": "التطبيق غير جاهز بعد، حاول لاحقاً.",
+  "unknown_command": "لم أفهم ذلك. استخدم أزرار القائمة أو أرسل /start."
+}

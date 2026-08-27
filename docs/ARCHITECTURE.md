@@ -139,8 +139,8 @@ GET    /channels/:id/earnings
 POST   /payouts
 
 # داخلی برای موتور نمایش (فراخوانی از bot/SDK)
-GET    /serve/ad?channelId=...      # دریافت بهترین تبلیغ برای نمایش
-POST   /serve/click                 # ثبت کلیک
+GET    /serve/ad?channelId=...&viewerTelegramId=...  # دریافت بهترین تبلیغ برای نمایش (auth: هدر X-Internal-Token، طبق docs/DECISIONS.md ADR-015)
+POST   /serve/click                 # ثبت کلیک (همون auth بالا)
 
 # ادمین (namespace جدا، auth جدا)
 GET    /admin/ads/pending

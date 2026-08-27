@@ -4,5 +4,6 @@ export * from "./user";
 export * from "./wallet";
 export * from "./ad";
 export * from "./category";
+export * from "./serve";
 export * from "./upload";
 export * from "./i18n";

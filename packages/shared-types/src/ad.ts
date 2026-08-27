@@ -43,7 +43,10 @@ export const createAdRequestSchema = z.object({
   initialStatus: z.enum(["ACTIVE", "PAUSED"]).default("ACTIVE"),
   dailyViewLimitPerUser: z.coerce.number().int().min(1).max(4),
   budgetTotalCoins: z.coerce.number().int().positive(),
-  cpmCoins: z.coerce.number().int().positive(),
+  // Minimum 1000: cost per impression is cpmCoins/1000 stored as an integer coin amount
+  // (docs/ARCHITECTURE.md section 4), so anything below 1000 would round down to a free
+  // impression - see docs/DECISIONS.md ADR-014.
+  cpmCoins: z.coerce.number().int().min(1000),
   acceptedTerms: z.literal(true),
 });
 export type CreateAdRequest = z.infer<typeof createAdRequestSchema>;

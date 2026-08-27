@@ -6,6 +6,7 @@ import { CategoryModule } from "./category/category.module";
 import { ConfigModule } from "./config/config.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { ServeModule } from "./serve/serve.module";
 import { UploadModule } from "./upload/upload.module";
 import { UserModule } from "./user/user.module";
 import { WalletModule } from "./wallet/wallet.module";
@@ -22,6 +23,7 @@ import { WalletModule } from "./wallet/wallet.module";
     AdModule,
     UploadModule,
     CategoryModule,
+    ServeModule,
   ],
 })
 export class AppModule {}

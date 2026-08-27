@@ -48,14 +48,14 @@
 - [x] **رزرو و بازگشت بودجه (پیش‌نیاز فاز ۵، طبق دستور کاربر قبل از ورود به فاز ۵ انجام شد)** — `AdService.submit()` دیگه فقط چک نمی‌کنه، واقعاً و atomic از کیف‌پول کم می‌کنه (`WalletTransaction` نوع `AD_SPEND`)؛ `AdService.reject(adId, reason)` (فقط از `PENDING_REVIEW`، هنوز به هیچ HTTP endpoint وصل نیست چون ادمین auth فاز ۶ هست) و `AdService.cancel` + `POST /ads/:id/cancel` (از `PENDING_REVIEW`/`ACTIVE`/`PAUSED`) باقیمانده‌ی مصرف‌نشده رو با `WalletTransaction` نوع `REFUND` برمی‌گردونن. جزئیات کامل در `docs/ARCHITECTURE.md` بخش ۴.۱ و `docs/DECISIONS.md` ADR-013. **نحوه‌ی تست:** ۱۷ unit test برای `AdService` + ۵ unit test جدید برای `*WalletInTx` در `packages/database`؛ به‌علاوه روی سرور واقعی + Postgres واقعی: submit واقعی موجودی رو دقیقاً کم کرد (ledger واقعی چک شد)، cancel دقیقاً همون مقدار رو برگردوند و double-cancel درست رد شد، و `reject()` (چون endpoint نداره) مستقیماً import و روی DB واقعی صدا زده شد و باقیمانده رو درست برگردوند — موجودی نهایی دقیقاً برابر موجودی اولیه شد.
 
 ## فاز ۵ — موتور نمایش تبلیغ (Ad Serving) — هسته‌ی مالی
-- [ ] پیاده‌سازی `AdServingService` طبق منطق `ARCHITECTURE.md` بخش ۴
-- [ ] endpoint داخلی `GET /serve/ad` و `POST /serve/click`
-- [ ] اعمال atomic transaction برای کسر بودجه (جلوگیری از race condition با دو impression هم‌زمان)
-- [ ] پیاده‌سازی `dailyViewLimitPerUser` با کوئری بهینه (ایندکس مناسب)
-- [ ] سیستم پایه ضدتقلب: rate limit روی کلیک از یک IP/کاربر
-- [ ] تغییر خودکار وضعیت تبلیغ به `OUT_OF_BUDGET` + اطلاع‌رسانی به تبلیغ‌دهنده از طریق ربات
-- [ ] تست‌های سنگین (unit + integration) برای این ماژول — پوشش حداقل ۸۰٪
-- [ ] یک کانال تلگرام تستی متصل کن و کل مسیر رو end-to-end روی محیط dev تست کن
+- [x] پیاده‌سازی `AdServingService` طبق منطق `ARCHITECTURE.md` بخش ۴ — فیلتر ACTIVE+بودجه، زبان/دسته‌بندی/کانال include-exclude (نرمال‌سازی @ و حروف بزرگ‌کوچک)، حداقل CPM ناشر، `dailyViewLimitPerUser`، مزایده‌ی CPM نزولی. **توجه:** فیلتر `excludedCountries` پیاده نشده چون کشور بیننده در هیچ‌جای مسیر فعلی در دسترس نیست (`apps/bot` هم نداره) — TODO.md
+- [x] endpoint داخلی `GET /serve/ad` و `POST /serve/click` — با `InternalServiceGuard` (توکن مشترک `INTERNAL_SERVICE_TOKEN`، مقایسه‌ی constant-time) طبق `docs/DECISIONS.md` ADR-015؛ **توجه:** `apps/bot` هنوز واقعاً این endpoint ها رو صدا نمی‌زنه (فراخوانی از کانال واقعی نیاز به فاز ۷ داره) — TODO.md
+- [x] اعمال atomic transaction برای کسر بودجه (جلوگیری از race condition با دو impression هم‌زمان) — همون الگوی `updateMany` شرطی که در ADR-013 برای کیف‌پول استفاده شد، اینجا هم برای `budgetSpentCoins` به کار رفت؛ با unit test مخصوص «باخت در race» و توضیح در ADR-015
+- [x] پیاده‌سازی `dailyViewLimitPerUser` با شمارش `AdImpression` در ۲۴ ساعت گذشته (از ایندکس موجود `[adId, viewerTelegramId, createdAt]` در schema استفاده می‌کنه)؛ **توجه:** این چک خودش atomic نیست (race نادر و بی‌ضرر مالی) — TODO.md
+- [x] سیستم پایه ضدتقلب: rate limit روی endpoint های `/serve/*` با `@nestjs/throttler` (فقط همین ماژول، نه global) — با burst test واقعی (۱۵ درخواست پشت‌سرهم) تأیید شد که از درخواست ۱۱ به بعد ۴۲۹ برمی‌گرده
+- [x] تغییر خودکار وضعیت تبلیغ به `OUT_OF_BUDGET` — تست شد؛ **اطلاع‌رسانی به تبلیغ‌دهنده از طریق ربات پیاده نشده** چون `apps/api` هیچ مسیری برای push کردن پیام به `apps/bot` نداره (gap یکپارچه‌سازی بین دو اپ، نه یک جزئیات کوچیک) — TODO.md
+- [x] تست‌های سنگین برای این ماژول — ۲۰ unit test، پوشش ۹۷.۶٪ statements / ۸۳.۷٪ branch روی `serve.service.ts`
+- [x] **به‌جای «یک کانال تلگرام تستی متصل کن»** (که چون فاز ۷/ثبت کانال هنوز نیومده امکان‌پذیر نبود)، مسیر کامل روی سرور واقعی + Postgres واقعی با یک ردیف `Channel` واقعی (ساخته‌شده مستقیم توسط اسکریپت، نه از طریق تلگرام) end-to-end تست شد: create→submit (فاز ۴) → approve دستی از DB (چون فاز ۶ نیومده) → ۳ بار `GET /serve/ad` واقعی که دقیقاً بودجه رو کم کرد و کیف‌پول ناشر رو شارژ کرد → `OUT_OF_BUDGET` خودکار → `POST /serve/click` واقعی → همون داده از `GET /ads/:id/stats` فاز ۴ هم درست خونده شد. **هیچ تعامل واقعی با تلگرام نبود** (نه کانال واقعی، نه ربات واقعی) — همون محدودیت شبکه‌ی همیشگی این sandbox.
 
 ## فاز ۶ — پنل ادمین (نسخه اول)
 - [ ] راه‌اندازی `apps/admin` با احراز هویت ایمیل/پسورد + TOTP
@@ -90,11 +90,10 @@
 ---
 
 ### وضعیت کلی فعلی
-فازهای ۰ تا ۴ کامل و تست‌شده (جزئیات هر آیتم در بخش خودش بالا)، شامل رزرو/بازگشت بودجه که به‌عنوان پیش‌نیاز صریح فاز ۵ انجام شد. فاز ۵ (موتور نمایش تبلیغ) هنوز شروع نشده.
+فازهای ۰ تا ۵ کامل و تست‌شده (جزئیات هر آیتم در بخش خودش بالا). دو تصمیم مهم فاز ۵ (حداقل CPM=۱۰۰۰ برای جلوگیری از رند شدن هزینه‌ی هر نمایش به صفر — ADR-014؛ و توکن داخلی مشترک برای `/serve/*` تا فاز ۷ کلید API واقعی هر ناشر رو بسازه — ADR-015) با تأیید صریح کاربر گرفته شد، نه حدسی. فاز ۶ (پنل ادمین) هنوز شروع نشده.
 
-**نقطه‌ی دقیق شروع فاز ۵:**
-۱. طبق `docs/ARCHITECTURE.md` بخش ۴، `AdServingService` رو در `apps/api` بساز: فیلتر تبلیغ‌های ACTIVE با بودجه باقی‌مونده → فیلتر targeting (زبان/دسته‌بندی/کانال include-exclude) → فیلتر `dailyViewLimitPerUser` → مرتب‌سازی بر اساس CPM نزولی → ثبت `AdImpression` + کسر اتمیک `budgetSpentCoins` (این کسر از بودجه‌ی از‌قبل‌رزروشده‌ست، طبق بخش ۴.۱ — **نباید** دوباره از `Wallet.balanceCoins` کم بشه).
-۲. اگر بعد از این کسر `budgetSpentCoins >= budgetTotalCoins` شد، وضعیت `OUT_OF_BUDGET` بشه — طبق بخش ۴.۱ مابه‌التفاوت همیشه صفره پس refund لازم نیست، نیازی به منطق جدید برای این حالت نیست.
-۳. `POST /serve/click` و انتقال سهم ناشر (`WalletTransaction` نوع `PUBLISHER_EARNING`) بعد از کسر `platformCommissionPercent` (مقدار کمیسیون از قبل در `PlatformSetting` طبق ADR-005 ست شده، ۲۰٪).
-۴. تست‌های سنگین این ماژول (>۸۰٪ پوشش) چون طبق CLAUDE.md قلب مالی سیستمه؛ حداقل یک e2e «ساخت→تأیید ادمین (فاز ۶، هنوز نساخته - شاید نیاز به یک راه موقت برای approve دستی از طریق دیتابیس/اسکریپت تا فاز ۶ ساخته بشه)→نمایش→کلیک→کسر بودجه» طبق ARCHITECTURE.md بخش ۷.
-۵. طبق قانون‌های خودکار (`docs/DECISIONS.md`)، هر تصمیم مهم رو ثبت کن؛ فقط برای credential واقعی/production/تغییر بنیادین معماری متوقف شو.
+**نقطه‌ی دقیق شروع فاز ۶:**
+۱. `apps/admin` با احراز هویت ایمیل/پسورد + TOTP (طبق ROADMAP) راه‌اندازی کن — این یک تصمیم امنیتی/معماری تازه‌ست (کتابخانه‌ی TOTP، مدل نشست ادمین) که در ARCHITECTURE.md فقط در حد اسم اومده؛ قبل از انتخاب کتابخانه/الگو با کاربر هماهنگ کن (طبق CLAUDE.md بند ۳).
+۲. صف تأیید تبلیغ‌ها: `POST /admin/ads/:id/approve` باید `Ad.status` رو به `initialStatusChoice` (ACTIVE یا PAUSED) تغییر بده؛ `POST /admin/ads/:id/reject` باید مستقیماً `AdService.reject(adId, reason)` رو صدا بزنه — این متد و منطق بازگشت بودجه‌اش از فاز ۴ کامل و تست‌شده آماده‌ست (ADR-013)، فقط نیاز به wiring داره.
+۳. بعد از پنل ادمین، `apps/bot` رو به `GET /serve/ad`/`POST /serve/click` وصل کن (با هدر `X-Internal-Token`) تا مسیر end-to-end واقعی («ساخت→تأیید ادمین واقعی→نمایش در کانال واقعی→کلیک→کسر بودجه» طبق ARCHITECTURE.md بخش ۷) بالاخره با تلگرام واقعی قابل تست بشه — تا این لحظه این مسیر فقط با داده‌ی دستی در دیتابیس شبیه‌سازی شده (TODO.md فاز ۵).
+۴. طبق قانون‌های خودکار (`docs/DECISIONS.md`)، هر تصمیم مهم رو ثبت کن؛ فقط برای credential واقعی/production/تغییر بنیادین معماری متوقف شو.

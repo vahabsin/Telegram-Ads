@@ -500,12 +500,15 @@ export function AdWizard({ onDone }: { onDone: () => void }) {
             <p className="mb-2 text-sm opacity-70">CPM (هزینه هزار نمایش)</p>
             <input
               type="number"
-              min={1}
+              min={1000}
+              step={100}
               value={form.cpmCoins || ""}
               onChange={(event) => update("cpmCoins", Number(event.target.value))}
               className="w-full rounded-lg border border-white/20 bg-transparent px-3 py-2"
             />
-            <p className="mt-1 text-xs opacity-50">CPM بالاتر یعنی اولویت نمایش بیشتر.</p>
+            <p className="mt-1 text-xs opacity-50">
+              حداقل ۱۰۰۰ سکه (یعنی حداقل هزینه هر نمایش = ۱ سکه). CPM بالاتر یعنی اولویت نمایش بیشتر.
+            </p>
           </div>
 
           <label className="flex items-center gap-2 text-sm">
@@ -525,7 +528,7 @@ export function AdWizard({ onDone }: { onDone: () => void }) {
               submitting ||
               !form.acceptedTerms ||
               form.budgetTotalCoins <= 0 ||
-              form.cpmCoins <= 0 ||
+              form.cpmCoins < 1000 ||
               insufficientBalance
             }
             onClick={() => void handleFinalSubmit()}

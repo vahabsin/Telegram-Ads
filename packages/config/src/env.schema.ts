@@ -13,6 +13,11 @@ export const envSchema = z.object({
   // local dev server; must be the real public HTTPS URL in production.
   API_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
   JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
+  // Shared secret protecting the internal-only GET /serve/ad and POST /serve/click endpoints
+  // (docs/ARCHITECTURE.md section 5, docs/DECISIONS.md ADR-015) - phase 5, before phase 7 gives
+  // each publisher their own real API key. Only apps/bot (and, later, this platform's own
+  // trusted callers) should ever hold this value.
+  INTERNAL_SERVICE_TOKEN: z.string().min(1, "INTERNAL_SERVICE_TOKEN is required"),
   TELEGRAM_BOT_TOKEN: z.string().optional(),
   MINIAPP_URL: z.string().optional(),
   // Optional external links shown in the bot's main menu (docs/ROADMAP.md phase 2). Left unset

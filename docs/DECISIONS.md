@@ -115,3 +115,14 @@ Phase 3 only needs two screens (Dashboard, Wallet), so view switching is a local
 - File type allow-list (JPEG/PNG/WebP/GIF images, MP4/WebM/QuickTime video) and a 20MB size cap are both placeholders picked for a reasonable phase-4 default, not from any spec - revisit if real ad creatives need something outside these.
 - `apps/api/uploads/` is gitignored; the directory is created at boot if missing (`UploadModule`'s constructor).
 - Verified against the real dev server + real disk: uploading a valid PNG returns a fetchable absolute URL (confirmed via a real `GET` back on that URL returning the file with the right content-type), a disallowed MIME type (`text/plain`) is rejected with 400, and the returned URL was successfully used as `mediaUrl` in a real `POST /ads` call.
+
+## ADR-012: `?mockInitData=` dev-only escape hatch in `apps/miniapp`
+
+**Date:** 2026-08-27
+**Phase:** 4
+
+`apps/miniapp/src/telegram.ts`'s `getInitData()` cannot be exercised in a plain browser - it only ever returns a value inside real Telegram's WebApp webview (docs/TODO.md phase 3 already flagged this as a testing gap). To actually click through the new ad wizard in a real browser with a real running backend (rather than trusting typecheck/lint alone for a UI change - per this project's testing standard), added a fallback: if `window.Telegram.WebApp.initData` is empty AND `import.meta.env.DEV` is true, read a `?mockInitData=` query param instead.
+
+- Gated on `import.meta.env.DEV`, which Vite statically replaces with `false` in a production build (`vite build`) - the branch is dead-code-eliminated and cannot exist in what actually ships. Confirmed by grepping the phase-3 production build output for `mockInitData` (absent).
+- The value still has to be a validly HMAC-signed `initData` string (`AuthService`/`validateTelegramInitData` doesn't know or care where it came from) - this only removes the "must be inside Telegram's webview to have `window.Telegram.WebApp.initData` populated" barrier for local testing, it does not weaken server-side validation at all.
+- Used this to manually verify the full ad wizard (5 steps, category loading, file upload with live preview, budget validation, create+submit) end-to-end in a real Chrome tab against the real dev API + dev Postgres - see `docs/ROADMAP.md` phase 4 for what was actually exercised this way.

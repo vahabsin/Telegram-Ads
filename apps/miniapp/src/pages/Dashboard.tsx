@@ -1,6 +1,12 @@
 import { useAuth } from "../AuthContext";
 
-export function Dashboard({ onGoToWallet }: { onGoToWallet: () => void }) {
+export function Dashboard({
+  onGoToWallet,
+  onCreateAd,
+}: {
+  onGoToWallet: () => void;
+  onCreateAd: () => void;
+}) {
   const { user } = useAuth();
 
   return (
@@ -13,9 +19,8 @@ export function Dashboard({ onGoToWallet }: { onGoToWallet: () => void }) {
       <div className="flex w-full max-w-xs flex-col gap-2">
         <button
           type="button"
-          disabled
-          title="ساخت تبلیغ در فاز بعدی اضافه می‌شه"
-          className="w-full rounded-lg bg-blue-600/50 px-4 py-3 font-medium text-white opacity-60"
+          onClick={onCreateAd}
+          className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white"
         >
           یکی بسازید
         </button>

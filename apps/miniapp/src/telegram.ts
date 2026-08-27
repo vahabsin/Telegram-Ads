@@ -19,5 +19,16 @@ export function getTelegramWebApp(): TelegramWebApp | null {
 
 export function getInitData(): string | null {
   const webApp = getTelegramWebApp();
-  return webApp?.initData || null;
+  if (webApp?.initData) {
+    return webApp.initData;
+  }
+  // Dev-only escape hatch for testing in a plain browser outside real Telegram
+  // (docs/DECISIONS.md ADR-012). `import.meta.env.DEV` is statically false in a
+  // production build, so Vite dead-code-eliminates this branch entirely - it cannot
+  // reach a deployed build.
+  if (import.meta.env.DEV) {
+    const mock = new URLSearchParams(window.location.search).get("mockInitData");
+    if (mock) return mock;
+  }
+  return null;
 }

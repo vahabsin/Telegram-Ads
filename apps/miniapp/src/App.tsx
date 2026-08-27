@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { AuthProvider, useAuth } from "./AuthContext";
+import { AdWizard } from "./pages/AdWizard";
 import { Dashboard } from "./pages/Dashboard";
+import { MyAds } from "./pages/MyAds";
 import { Wallet } from "./pages/Wallet";
 
-type View = "dashboard" | "wallet";
+type View = "dashboard" | "wallet" | "wizard" | "my-ads";
 
 function Shell() {
   const { status, user, error } = useAuth();
@@ -17,6 +19,16 @@ function Shell() {
     return <div className="p-6 text-center text-red-400">{error}</div>;
   }
 
+  // The wizard gets the full screen, no header/bottom nav, so the advertiser stays focused
+  // on the 5 steps (docs/PRD.md section 2.3).
+  if (view === "wizard") {
+    return (
+      <div className="mx-auto min-h-screen max-w-md">
+        <AdWizard onDone={() => setView("my-ads")} />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col">
       <header className="flex items-center justify-between border-b border-white/10 px-4 py-3">
@@ -27,7 +39,11 @@ function Shell() {
       </header>
 
       <main className="flex-1">
-        {view === "dashboard" ? <Dashboard onGoToWallet={() => setView("wallet")} /> : <Wallet />}
+        {view === "dashboard" && (
+          <Dashboard onGoToWallet={() => setView("wallet")} onCreateAd={() => setView("wizard")} />
+        )}
+        {view === "wallet" && <Wallet />}
+        {view === "my-ads" && <MyAds onCreateNew={() => setView("wizard")} />}
       </main>
 
       <nav className="flex border-t border-white/10">
@@ -37,6 +53,13 @@ function Shell() {
           className={`flex-1 py-3 text-sm ${view === "dashboard" ? "font-semibold" : "opacity-60"}`}
         >
           داشبورد
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("my-ads")}
+          className={`flex-1 py-3 text-sm ${view === "my-ads" ? "font-semibold" : "opacity-60"}`}
+        >
+          تبلیغ‌های من
         </button>
         <button
           type="button"

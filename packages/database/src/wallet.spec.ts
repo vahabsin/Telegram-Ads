@@ -1,5 +1,12 @@
 import { Prisma } from "../generated/client";
-import { creditWallet, debitWallet, InsufficientBalanceError, InvalidAmountError } from "./wallet";
+import {
+  creditWallet,
+  creditWalletInTx,
+  debitWallet,
+  debitWalletInTx,
+  InsufficientBalanceError,
+  InvalidAmountError,
+} from "./wallet";
 
 function buildMockTx() {
   return {
@@ -121,5 +128,70 @@ describe("wallet mutation logic", () => {
     const result = await creditWallet(mockPrisma as never, baseInput);
 
     expect(result).toBe(winnerRecord);
+  });
+
+  describe("*InTx variants (mutate directly on a caller-supplied transaction client)", () => {
+    it("debitWalletInTx mutates the given tx directly without opening its own transaction", async () => {
+      const mockTx = buildMockTx();
+      mockTx.walletTransaction.findUnique.mockResolvedValue(null);
+      mockTx.wallet.findUniqueOrThrow.mockResolvedValue({ id: "wallet-1", balanceCoins: 500n });
+      mockTx.wallet.updateMany.mockResolvedValue({ count: 1 });
+      mockTx.walletTransaction.create.mockImplementation(({ data }) => Promise.resolve(data));
+
+      const result = await debitWalletInTx(mockTx as never, baseInput);
+
+      expect(mockTx.wallet.updateMany).toHaveBeenCalledWith({
+        where: { id: "wallet-1", balanceCoins: { gte: 100n } },
+        data: { balanceCoins: { decrement: 100n } },
+      });
+      expect(result).toMatchObject({ status: "COMPLETED" });
+    });
+
+    it("debitWalletInTx throws InsufficientBalanceError without touching wallet_transactions", async () => {
+      const mockTx = buildMockTx();
+      mockTx.walletTransaction.findUnique.mockResolvedValue(null);
+      mockTx.wallet.findUniqueOrThrow.mockResolvedValue({ id: "wallet-1", balanceCoins: 50n });
+      mockTx.wallet.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(debitWalletInTx(mockTx as never, baseInput)).rejects.toBeInstanceOf(
+        InsufficientBalanceError,
+      );
+      expect(mockTx.walletTransaction.create).not.toHaveBeenCalled();
+    });
+
+    it("creditWalletInTx increments the balance on the given tx", async () => {
+      const mockTx = buildMockTx();
+      mockTx.walletTransaction.findUnique.mockResolvedValue(null);
+      mockTx.wallet.findUniqueOrThrow.mockResolvedValue({ id: "wallet-1", balanceCoins: 500n });
+      mockTx.walletTransaction.create.mockImplementation(({ data }) => Promise.resolve(data));
+
+      const result = await creditWalletInTx(mockTx as never, baseInput);
+
+      expect(mockTx.wallet.update).toHaveBeenCalledWith({
+        where: { id: "wallet-1" },
+        data: { balanceCoins: { increment: 100n } },
+      });
+      expect(result).toMatchObject({ status: "COMPLETED" });
+    });
+
+    it("rejects non-positive amounts before touching the given tx", async () => {
+      const mockTx = buildMockTx();
+
+      await expect(
+        debitWalletInTx(mockTx as never, { ...baseInput, amountCoins: 0n }),
+      ).rejects.toBeInstanceOf(InvalidAmountError);
+      expect(mockTx.wallet.findUniqueOrThrow).not.toHaveBeenCalled();
+    });
+
+    it("is idempotent within the given tx: returns the existing transaction unchanged", async () => {
+      const mockTx = buildMockTx();
+      const existing = { id: "tx-1", status: "COMPLETED", amountCoins: 100n };
+      mockTx.walletTransaction.findUnique.mockResolvedValue(existing);
+
+      const result = await debitWalletInTx(mockTx as never, baseInput);
+
+      expect(result).toBe(existing);
+      expect(mockTx.wallet.findUniqueOrThrow).not.toHaveBeenCalled();
+    });
   });
 });

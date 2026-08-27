@@ -44,14 +44,28 @@ export async function getBalanceCoins(db: Db, userId: string): Promise<bigint> {
   return wallet.balanceCoins;
 }
 
-/** Credits (adds to) the wallet balance. Idempotent on `idempotencyKey`. */
+/** Credits (adds to) the wallet balance. Idempotent on `idempotencyKey`. Opens its own transaction. */
 export async function creditWallet(prisma: PrismaClient, input: WalletMutationInput) {
   return mutateWallet(prisma, { ...input, direction: 1 });
 }
 
-/** Debits (subtracts from) the wallet balance. Idempotent on `idempotencyKey`. */
+/** Debits (subtracts from) the wallet balance. Idempotent on `idempotencyKey`. Opens its own transaction. */
 export async function debitWallet(prisma: PrismaClient, input: WalletMutationInput) {
   return mutateWallet(prisma, { ...input, direction: -1 });
+}
+
+// Variants for a caller that already owns a transaction and needs the wallet mutation to be
+// part of it - e.g. AdService.submit() reserving an ad's budget atomically alongside the Ad
+// status change (docs/DECISIONS.md ADR-013). No P2002 retry here: a same-key race inside the
+// caller's own transaction aborts that whole transaction (correct - the caller decides what to
+// do with the failure), unlike the standalone creditWallet/debitWallet above which are meant to
+// tolerate retried at-least-once callers (e.g. a payment webhook) by returning the winner.
+export async function creditWalletInTx(tx: Prisma.TransactionClient, input: WalletMutationInput) {
+  return mutateWalletCore(tx, { ...input, direction: 1 });
+}
+
+export async function debitWalletInTx(tx: Prisma.TransactionClient, input: WalletMutationInput) {
+  return mutateWalletCore(tx, { ...input, direction: -1 });
 }
 
 async function mutateWallet(
@@ -63,45 +77,7 @@ async function mutateWallet(
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
-      const existing = await tx.walletTransaction.findUnique({
-        where: { idempotencyKey: input.idempotencyKey },
-      });
-      if (existing) {
-        return existing;
-      }
-
-      const wallet = await tx.wallet.findUniqueOrThrow({ where: { userId: input.userId } });
-
-      if (input.direction === -1) {
-        // Atomic conditional decrement: the DB checks the balance under the row lock it
-        // takes for the UPDATE, so this is race-safe against concurrent debits.
-        const updated = await tx.wallet.updateMany({
-          where: { id: wallet.id, balanceCoins: { gte: input.amountCoins } },
-          data: { balanceCoins: { decrement: input.amountCoins } },
-        });
-        if (updated.count === 0) {
-          throw new InsufficientBalanceError();
-        }
-      } else {
-        await tx.wallet.update({
-          where: { id: wallet.id },
-          data: { balanceCoins: { increment: input.amountCoins } },
-        });
-      }
-
-      return tx.walletTransaction.create({
-        data: {
-          walletId: wallet.id,
-          type: input.type,
-          amountCoins: input.amountCoins,
-          status: "COMPLETED",
-          paymentMethod: input.paymentMethod,
-          externalRef: input.externalRef ?? null,
-          idempotencyKey: input.idempotencyKey,
-        },
-      });
-    });
+    return await prisma.$transaction((tx) => mutateWalletCore(tx, input));
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       // Lost a race against another call with the same idempotencyKey: our whole transaction
@@ -116,4 +92,51 @@ async function mutateWallet(
     }
     throw error;
   }
+}
+
+async function mutateWalletCore(
+  tx: Prisma.TransactionClient,
+  input: WalletMutationInput & { direction: 1 | -1 },
+) {
+  if (input.amountCoins <= 0n) {
+    throw new InvalidAmountError();
+  }
+
+  const existing = await tx.walletTransaction.findUnique({
+    where: { idempotencyKey: input.idempotencyKey },
+  });
+  if (existing) {
+    return existing;
+  }
+
+  const wallet = await tx.wallet.findUniqueOrThrow({ where: { userId: input.userId } });
+
+  if (input.direction === -1) {
+    // Atomic conditional decrement: the DB checks the balance under the row lock it
+    // takes for the UPDATE, so this is race-safe against concurrent debits.
+    const updated = await tx.wallet.updateMany({
+      where: { id: wallet.id, balanceCoins: { gte: input.amountCoins } },
+      data: { balanceCoins: { decrement: input.amountCoins } },
+    });
+    if (updated.count === 0) {
+      throw new InsufficientBalanceError();
+    }
+  } else {
+    await tx.wallet.update({
+      where: { id: wallet.id },
+      data: { balanceCoins: { increment: input.amountCoins } },
+    });
+  }
+
+  return tx.walletTransaction.create({
+    data: {
+      walletId: wallet.id,
+      type: input.type,
+      amountCoins: input.amountCoins,
+      status: "COMPLETED",
+      paymentMethod: input.paymentMethod,
+      externalRef: input.externalRef ?? null,
+      idempotencyKey: input.idempotencyKey,
+    },
+  });
 }

@@ -85,6 +85,19 @@ packages/config/       -> بارگذاری و اعتبارسنجی env با zod
 
 ## ۴. موتور نمایش تبلیغ (Ad Serving Engine) — منطق هسته‌ای
 
+### ۴.۱ رزرو و آزادسازی بودجه (Budget Reservation)
+
+**این بخش پیش‌نیاز موتور نمایشه و در فاز ۴ (نه فاز ۵) پیاده و تست شد — چون بدون یک قانون قطعی برای «بودجه‌ی موجود»، موتور نمایش نمی‌تونه با خیال راحت روی budget حساب باز کنه.** (`docs/DECISIONS.md` ADR-013)
+
+قانون: **submit = رزرو واقعی، نه فقط چک موجودی.**
+
+- **رزرو (`AdService.submit`):** وقتی تبلیغی از `DRAFT`/`REJECTED` به `PENDING_REVIEW` می‌ره، `budgetTotalCoins` آن **فوراً و به‌صورت atomic** (یک Prisma transaction) از `Wallet.balanceCoins` تبلیغ‌دهنده کسر می‌شه و یک `WalletTransaction` نوع `AD_SPEND` با `externalRef = adId` ثبت می‌شه. اگر موجودی کافی نباشه، کل تراکنش rollback می‌شه و خطای ۴۰۹ برگردونده می‌شه — نه فقط یک هشدار قبل از تغییر status. از این لحظه به بعد، این مبلغ دیگه جزو `balanceCoins` قابل‌خرج نیست؛ آدرس واقعی‌اش `Ad.budgetTotalCoins` همون تبلیغه (نیازی به یک ستون جدید مثل `reservedBalance` روی `Wallet` نبود، چون `Ad.budgetTotalCoins`/`Ad.budgetSpentCoins` خودشون دقیقاً همون رزرو رو نشون می‌دن).
+- **مصرف رزرو (فاز ۵، `AdServingService`):** هر impression، `budgetSpentCoins` تبلیغ رو زیاد می‌کنه — این کسر از رزروی هست که همون لحظه‌ی submit از کیف‌پول جدا شده، **نه** یک کسر جدید و مستقل از `Wallet.balanceCoins`.
+- **آزادسازی/بازگشت (`AdService.reject`, `AdService.cancel`):** هر وقت رزرو یک تبلیغ بسته می‌شه بدون اینکه کامل مصرف شده باشه، مابه‌التفاوت `budgetTotalCoins - budgetSpentCoins` به‌صورت atomic به `Wallet.balanceCoins` برمی‌گرده (یک `WalletTransaction` نوع `REFUND` با همون `externalRef = adId`؛ اگر مابه‌التفاوت صفر باشه، هیچ تراکنشی ثبت نمی‌شه):
+  - **رد شدن توسط ادمین (`REJECTED`):** چون رد معمولاً قبل از `ACTIVE` شدن (یعنی قبل از هر impression) اتفاق می‌افته، معمولاً کل `budgetTotalCoins` برمی‌گرده. `AdService.reject(adId, reason)` این منطق رو داره ولی هنوز به هیچ HTTP endpoint وصل نیست چون `AdminModule`/احراز هویت ادمین (فاز ۶) هنوز ساخته نشده — هر کنترلر ادمینی که در فاز ۶ ساخته بشه باید مستقیماً همین متد رو صدا بزنه.
+  - **توقف دستی توسط تبلیغ‌دهنده (`AdService.cancel` → وضعیت `COMPLETED`):** از طریق `POST /ads/:id/cancel`، از وضعیت‌های `PENDING_REVIEW`/`ACTIVE`/`PAUSED` قابل‌فراخوانیه؛ باقیمانده‌ی مصرف‌نشده برمی‌گرده به کیف‌پول (قابل‌استفاده برای تبلیغ بعدی).
+  - **پایان بودجه (`OUT_OF_BUDGET`, فاز ۵):** طبق تعریف، در این حالت `budgetSpentCoins == budgetTotalCoins`، پس مابه‌التفاوت همیشه صفره و نیازی به تراکنش refund نیست — این حالت به‌طور طبیعی idempotent با همین قانون سازگاره، نیازی به مسیر جدا نداره.
+
 هر بار که یک ناشر (کانال/ربات) درخواست یک تبلیغ برای نمایش می‌کنه:
 
 1. فیلتر تبلیغ‌های `status=ACTIVE` و `budgetSpentCoins < budgetTotalCoins`
@@ -93,8 +106,8 @@ packages/config/       -> بارگذاری و اعتبارسنجی env با zod
 4. بررسی `dailyViewLimitPerUser`: تعداد impression این تبلیغ برای این `viewerTelegramId` در ۲۴ ساعت گذشته نباید از حد مجاز رد بشه
 5. بررسی حداقل CPM قابل‌قبول ناشر (`Channel.minAcceptedCpm <= Ad.cpmCoins`)
 6. از بین تبلیغ‌های واجد شرایط، **مرتب‌سازی بر اساس CPM نزولی** (مزایده‌ی ساده — Ad با CPM بالاتر اولویت نمایش داره) — می‌تونه بعداً به یک الگوریتم weighted-random ارتقا پیدا کنه تا تبلیغ‌های CPM پایین‌تر هم شانس نمایش داشته باشن
-7. ثبت `AdImpression` و کسر `cpmCoins/1000` از `budgetSpentCoins` تبلیغ (به‌صورت atomic transaction) و افزودن سهم ناشر به `WalletTransaction` نوع `PUBLISHER_EARNING` (بعد از کسر `platformCommissionPercent`)
-8. اگر `budgetSpentCoins >= budgetTotalCoins` بعد از این تراکنش، وضعیت تبلیغ به `OUT_OF_BUDGET` تغییر کنه و به تبلیغ‌دهنده پیام اطلاع‌رسانی ارسال بشه.
+7. ثبت `AdImpression` و کسر `cpmCoins/1000` از `budgetSpentCoins` تبلیغ (به‌صورت atomic transaction؛ طبق ۴.۱ بالا، این کسر از بودجه‌ی از‌قبل‌رزروشده است، نه یک کسر جدید از `Wallet.balanceCoins`) و افزودن سهم ناشر به `WalletTransaction` نوع `PUBLISHER_EARNING` (بعد از کسر `platformCommissionPercent`)
+8. اگر `budgetSpentCoins >= budgetTotalCoins` بعد از این تراکنش، وضعیت تبلیغ به `OUT_OF_BUDGET` تغییر کنه و به تبلیغ‌دهنده پیام اطلاع‌رسانی ارسال بشه (طبق ۴.۱، این حالت مابه‌التفاوت صفر داره، پس refund لازم نیست).
 
 این منطق باید در یک سرویس مجزا (`AdServingService`) با تست واحد سنگین پیاده بشه چون قلب مالی سیستمه.
 
@@ -108,7 +121,8 @@ GET    /categories
 # تبلیغ‌ها
 POST   /ads                         # ایجاد تبلیغ (DRAFT)
 PATCH  /ads/:id                     # ویرایش پیش از تأیید
-POST   /ads/:id/submit              # ارسال برای بازبینی -> PENDING_REVIEW
+POST   /ads/:id/submit              # ارسال برای بازبینی -> PENDING_REVIEW (رزرو بودجه، بخش ۴.۱)
+POST   /ads/:id/cancel              # توقف دستی توسط تبلیغ‌دهنده -> COMPLETED (بازگشت باقیمانده‌ی بودجه، بخش ۴.۱)
 GET    /ads                         # لیست تبلیغ‌های من
 GET    /ads/:id/stats
 
@@ -131,7 +145,7 @@ POST   /serve/click                 # ثبت کلیک
 # ادمین (namespace جدا، auth جدا)
 GET    /admin/ads/pending
 POST   /admin/ads/:id/approve
-POST   /admin/ads/:id/reject
+POST   /admin/ads/:id/reject       # فقط باید AdService.reject(adId, reason) رو صدا بزنه - منطق و بازگشت بودجه از قبل در فاز ۴ پیاده و تست شده (بخش ۴.۱)
 GET    /admin/payouts/pending
 POST   /admin/payouts/:id/approve
 GET    /admin/settings

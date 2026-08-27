@@ -36,6 +36,11 @@ export class AdController {
     return this.adService.submit(request.userId, id);
   }
 
+  @Post(":id/cancel")
+  async cancel(@Req() request: AuthenticatedRequest, @Param("id") id: string): Promise<AdDto> {
+    return this.adService.cancel(request.userId, id);
+  }
+
   @Get()
   async list(@Req() request: AuthenticatedRequest): Promise<ListAdsResponse> {
     const ads = await this.adService.list(request.userId);

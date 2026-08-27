@@ -17,7 +17,7 @@
 - [x] نوشتن Prisma schema کامل طبق `ARCHITECTURE.md` بخش ۳
 - [x] اولین migration + seed دسته‌بندی‌ها و `PlatformSetting` (کمیسیون ۲۰٪ طبق دستور کاربر؛ بقیه‌ی مقادیر placeholder با TODO — `docs/DECISIONS.md` ADR-005)
 - [x] راه‌اندازی پروژه NestJS در `apps/api` با ماژول `HealthCheck` (تست شد: `GET /health` واقعاً بالا اومد)
-- [x] پیاده‌سازی اعتبارسنجی `initData` تلگرام + صدور JWT (`AuthModule`) — end-to-end با bot token واقعی تست شد
+- [x] پیاده‌سازی اعتبارسنجی `initData` تلگرام + صدور JWT (`AuthModule`) — منطق HMAC با ۱۱ unit test پوشش کامل داده شده (bot token و initData ساختگی/mock در تست، طبق الگوریتم رسمی تلگرام)؛ **end-to-end با bot token واقعی و initData واقعی از Mini App تست نشده** (نیاز به دسترسی شبکه به `api.telegram.org` که در این sandbox مسدوده — TODO.md)
 - [x] `UserModule` + `WalletModule` (فقط CRUD پایه، بدون منطق پرداخت هنوز) — شامل credit/debit idempotent برای استفاده در فازهای بعدی
 - [x] تست واحد برای اعتبارسنجی initData (۱۱ تست) و منطق کیف پول پایه (۷ تست) — پوشش این دو فایل core به‌ترتیب ~۹۸٪ و ~۸۸٪
 

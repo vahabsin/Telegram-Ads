@@ -4,6 +4,10 @@ Running list of things that could not be completed autonomously (real credential
 access, or decisions explicitly reserved for the user per CLAUDE.md), maintained during the
 2026-08-27 overnight autonomous run. Each entry says what's blocked and what's needed to unblock it.
 
+## Phase 1 — Backend core
+
+- **`AuthModule` (Telegram `initData` validation + JWT issuance) has not been tested end-to-end with a real bot token or real `initData` from a live Telegram Mini App.** Verified instead via: 11 unit tests in `apps/api/src/auth/telegram-init-data.spec.ts` covering the HMAC validation algorithm (accept/reject/tamper/expiry/replay cases), using a synthetic constant token (`"123456:TEST-bot-token-not-real"`) and initData signed locally by a test-only helper — not a real bot token, not real Telegram-issued initData. There is no integration/e2e test exercising `AuthController` → `AuthService` → JWT issuance → user creation as a real HTTP request. **Action needed (must be done by the user, who has network access to `api.telegram.org`, before any production deployment):** test the real end-to-end path — open the Mini App inside real Telegram, let it send real `initData` signed with the real `TELEGRAM_BOT_TOKEN` to `POST /auth/telegram-webapp`, and confirm a valid JWT is issued and the correct user is created/found.
+
 ## Phase 2 — Telegram bot
 
 - **Live Telegram connectivity could not be verified in this sandbox.** `curl https://api.telegram.org/...` and `bot.start()` (grammY long polling) both hang/time out from this environment — outbound network to `api.telegram.org` appears blocked here. Verified instead via: `pnpm typecheck`/`pnpm lint` passing, and 10 unit tests covering `/start`, language selection, and the user-upsert logic with mocked Telegram context + mocked Prisma. **Action needed:** run `pnpm --filter @telegram-ads/bot start:dev` yourself (outside this sandbox, with `.env` populated) and confirm `/start` actually works against real Telegram.

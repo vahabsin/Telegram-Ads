@@ -8,6 +8,10 @@ export const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   REDIS_URL: z.string().min(1, "REDIS_URL is required"),
   API_PORT: z.coerce.number().int().positive().default(3000),
+  // Base URL apps/api uses to build absolute links to itself (e.g. uploaded media URLs -
+  // docs/ROADMAP.md phase 4 - since AdDto.mediaUrl must be an absolute URL). Defaults to the
+  // local dev server; must be the real public HTTPS URL in production.
+  API_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
   JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
   TELEGRAM_BOT_TOKEN: z.string().optional(),
   MINIAPP_URL: z.string().optional(),

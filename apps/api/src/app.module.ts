@@ -5,6 +5,7 @@ import { JwtCoreModule } from "./auth/jwt-core.module";
 import { ConfigModule } from "./config/config.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { UploadModule } from "./upload/upload.module";
 import { UserModule } from "./user/user.module";
 import { WalletModule } from "./wallet/wallet.module";
 
@@ -18,6 +19,7 @@ import { WalletModule } from "./wallet/wallet.module";
     UserModule,
     AuthModule,
     AdModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

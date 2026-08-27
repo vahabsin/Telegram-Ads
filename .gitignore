@@ -16,6 +16,9 @@ build/
 # Prisma
 packages/database/generated/
 
+# Locally-uploaded ad media (phase 4, local-disk storage - docs/DECISIONS.md ADR-011)
+apps/api/uploads/
+
 # Logs
 *.log
 npm-debug.log*

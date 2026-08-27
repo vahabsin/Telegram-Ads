@@ -39,7 +39,7 @@
 
 ## فاز ۴ — ساخت تبلیغ (Wizard کامل)
 - [~] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM) — بک‌اند (`AdModule`: create/update/submit/list/stats طبق ARCHITECTURE.md بخش ۵) کامل شد و روی سرور واقعی + Postgres واقعی دستی تست شد (نه فقط unit test): مسیر کامل create → PATCH روی DRAFT → رد submit با موجودی ناکافی → شارژ کیف‌پول → submit موفق → قفل شدن PATCH/resubmit روی PENDING_REVIEW → ایزوله بودن مالکیت بین دو کاربر → list/stats، همه با curl واقعی روی HTTP واقعی چک شدن؛ ۱۱ unit test هم برای منطق سرویس نوشته شده (`ad.service.spec.ts`). **هنوز مونده:** فرم UI ویزارد در `apps/miniapp` (این بخش هیچ ارتباطی با تلگرام/شبکه‌ی خارجی نداره پس محدودیت شبکه‌ی sandbox روش تأثیری نداره)
-- [ ] آپلود تصویر/ویدیو (ذخیره در S3-compatible storage یا local volume در فاز اول)
+- [x] آپلود تصویر/ویدیو (`UploadModule` — ذخیره local disk طبق تصمیم فاز اول، `docs/DECISIONS.md` ADR-011) — روی سرور واقعی تست شد: آپلود PNG واقعی، رد نوع فایل غیرمجاز، fetch موفق فایل برگشتی، و استفاده از URL برگشتی به‌عنوان mediaUrl واقعی در `POST /ads`
 - [ ] کامپوننت پیش‌نمایش زنده‌ی تبلیغ (شبیه‌ساز کارت Ad تلگرام)
 - [ ] اعتبارسنجی سمت سرور کامل فرم (Zod DTO مشترک با بک‌اند)
 - [ ] بررسی موجودی کافی قبل از ثبت + پیام هدایت به شارژ حساب در صورت کمبود

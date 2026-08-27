@@ -85,3 +85,19 @@ Phase 3 only needs two screens (Dashboard, Wallet), so view switching is a local
 `docs/PRD.md` section 2.3 step 5 requires the advertiser to choose, at ad-creation time, whether an approved ad goes straight to `ACTIVE` or starts `PAUSED` waiting for manual activation. `docs/ARCHITECTURE.md`'s (explicitly summarized) `Ad` schema has no field for this - `status` itself becomes `PENDING_REVIEW` on submit regardless, and nothing preserved the advertiser's original choice for the admin-approval step (phase 6) to read back. Added a new nullable-by-default enum `AdInitialStatusChoice { ACTIVE PAUSED }` and `Ad.initialStatusChoice` (`@default(ACTIVE)`) to `schema.prisma` - purely additive, no existing column changed or removed, so it doesn't conflict with anything ARCHITECTURE.md specifies.
 
 **Status:** schema.prisma edited and committed; `prisma migrate dev` has **not** run yet (interrupted before execution) - nothing in the codebase references this field/enum yet, so leaving it unmigrated for now doesn't break anything. Next session should run the migration before writing `AdService` (see `docs/ROADMAP.md` phase 4 resume point).
+
+**Update 2026-08-27:** migration `20260827075316_add_ad_initial_status_choice` applied against the dev Postgres. `AdModule` (`AdService`/`AdController`) built on top of it - see ADR-010 for the editability rule.
+
+## ADR-010: `Ad` is only editable/submittable while `DRAFT` or `REJECTED`
+
+**Date:** 2026-08-27
+**Phase:** 4
+
+`docs/ARCHITECTURE.md` section 5 labels `PATCH /ads/:id` as "ویرایش پیش از تأیید" (edit before approval) but doesn't enumerate exactly which `AdStatus` values that covers. Chose `DRAFT` and `REJECTED` (not `PENDING_REVIEW`, `ACTIVE`, `PAUSED`, `COMPLETED`, or `OUT_OF_BUDGET`):
+
+- `DRAFT` is the obvious case - the ad hasn't been submitted yet.
+- `REJECTED` is included so an advertiser can fix whatever the admin flagged and resubmit, without needing a separate "clone ad" flow; editing a `REJECTED` ad also clears `rejectionReason` back to `null`.
+- `PENDING_REVIEW` is excluded so an admin moderator (phase 6) is never reviewing a payload that changes out from under them mid-queue.
+- Everything past approval (`ACTIVE`/`PAUSED`/`COMPLETED`/`OUT_OF_BUDGET`) is excluded because phase 5's `AdServingService` may already be actively spending that ad's budget; editing budget/CPM/targeting live would need its own concurrency-safe design, not a plain field update. Pausing/resuming an active ad is a distinct, simpler action (`docs/PRD.md` section 2.5 "توقف موقت") not yet built - tracked as a phase-4/5 gap, not solved by this ADR.
+
+`AdService.submit()` uses the same `DRAFT`/`REJECTED` gate, plus a wallet-balance check (`WalletService.getBalanceCoins(userId) >= budgetTotalCoins`) before allowing the `PENDING_REVIEW` transition, per `docs/PRD.md` section 2.3's "اعتبارسنجی موجودی" requirement. **Important scope note:** this balance check is a gate only - it does not reserve or debit the coins. Actual budget deduction happens per-impression in phase 5's `AdServingService` (`docs/ARCHITECTURE.md` section 4), which isn't built yet. Until phase 5 lands, nothing stops an advertiser from submitting several ads whose budgets together exceed their current balance (each `submit()` call only checks the balance at that moment, independently). Flagged here rather than solved now because a proper fix (reserving/locking budget at submit time) changes the wallet's accounting model and deserves its own design pass alongside phase 5, not a bolt-on in phase 4.

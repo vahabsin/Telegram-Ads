@@ -38,7 +38,7 @@
 - [x] تست: منطق قیمت‌گذاری Stars، تجزیه‌ی payload، و اعتبارسنجی کیف‌پول یونیت‌تست شدن؛ مسیر کامل زنده (پرداخت واقعی داخل تلگرام) در این sandbox قابل اجرا نبود (شبکه مسدود + عدم دسترسی به کلاینت واقعی تلگرام) — TODO.md
 
 ## فاز ۴ — ساخت تبلیغ (Wizard کامل)
-- [~] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM) — فقط DTO های Zod مشترک (`packages/shared-types/src/ad.ts`) و فیلد schema `Ad.initialStatusChoice` (بدون migration) آماده‌ست؛ فرم UI، AdModule بک‌اند، و migration هنوز مونده
+- [~] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM) — بک‌اند (`AdModule`: create/update/submit/list/stats طبق ARCHITECTURE.md بخش ۵) کامل شد و روی سرور واقعی + Postgres واقعی دستی تست شد (نه فقط unit test): مسیر کامل create → PATCH روی DRAFT → رد submit با موجودی ناکافی → شارژ کیف‌پول → submit موفق → قفل شدن PATCH/resubmit روی PENDING_REVIEW → ایزوله بودن مالکیت بین دو کاربر → list/stats، همه با curl واقعی روی HTTP واقعی چک شدن؛ ۱۱ unit test هم برای منطق سرویس نوشته شده (`ad.service.spec.ts`). **هنوز مونده:** فرم UI ویزارد در `apps/miniapp` (این بخش هیچ ارتباطی با تلگرام/شبکه‌ی خارجی نداره پس محدودیت شبکه‌ی sandbox روش تأثیری نداره)
 - [ ] آپلود تصویر/ویدیو (ذخیره در S3-compatible storage یا local volume در فاز اول)
 - [ ] کامپوننت پیش‌نمایش زنده‌ی تبلیغ (شبیه‌ساز کارت Ad تلگرام)
 - [ ] اعتبارسنجی سمت سرور کامل فرم (Zod DTO مشترک با بک‌اند)
@@ -89,12 +89,10 @@
 ---
 
 ### وضعیت کلی فعلی
-فازهای ۰ تا ۳ کامل و push شده. فاز ۴ شروع شده ولی نصفه‌کاره (نقطه‌ی دقیق ادامه در پایین همین بخش، بعد از تأیید کاربر برای ادامه از سشن قبل).
+فازهای ۰ تا ۳ کامل و push شده. فاز ۴: migration اجرا شد، `AdModule` بک‌اند کامل و روی سرور واقعی تست شد (جزئیات بالا). باقی‌مونده‌ی فاز ۴ پایین همین بخش.
 
-**نقطه‌ی دقیق شروع مجدد فاز ۴:**
-۱. `cd packages/database` و `DATABASE_URL=postgresql://tgads:tgads_dev_password@localhost:5434/tgads npx prisma migrate dev --name add_ad_initial_status_choice` را اجرا کن (این migration قبلاً یک‌بار توسط کاربر رد شد چون سشن داشت می‌بست؛ الان که ادامه می‌دی طبیعیه که اجراش کنی، مگر کاربر چیز دیگه‌ای بگه).
-۲. بعد `apps/api/src/ad/` بساز: `AdModule` + `AdService` (create/update/submit/list/stats) + `AdController` طبق endpoint های `docs/ARCHITECTURE.md` بخش ۵ (`POST /ads`, `PATCH /ads/:id`, `POST /ads/:id/submit`, `GET /ads`, `GET /ads/:id/stats`).
-۳. در `submit()`: چک موجودی کیف‌پول با `WalletService.getBalanceCoins` قبل از `budgetTotalCoins`؛ اگه ناکافی بود پیام واضح + راهنمایی به شارژ حساب.
-۴. آپلود عکس/ویدیو: local disk volume (نه S3) طبق یادداشت ARCHITECTURE برای فاز اول — احتمالاً یک ماژول Upload جدا با multer.
-۵. سمت `apps/miniapp`: کامپوننت ویزارد ۵ مرحله‌ای + پیش‌نمایش زنده‌ی کارت تبلیغ + صفحه‌ی «تبلیغ‌های من».
-۶. طبق قانون‌های خودکار (`docs/DECISIONS.md`)، هر تصمیم مهم رو ثبت کن؛ فقط برای credential واقعی/production/تغییر بنیادین معماری متوقف شو.
+**نقطه‌ی دقیق ادامه‌ی فاز ۴:**
+۱. آپلود عکس/ویدیو: local disk volume (نه S3) طبق یادداشت ARCHITECTURE برای فاز اول — یک ماژول `Upload` جدا با multer در `apps/api`.
+۲. سمت `apps/miniapp`: کامپوننت ویزارد ۵ مرحله‌ای (Placement→عنوان→Targeting→Creative→بودجه/CPM) که از endpoint های `AdModule` موجود استفاده می‌کنه + پیش‌نمایش زنده‌ی کارت تبلیغ + صفحه‌ی «تبلیغ‌های من» (`GET /ads`, `GET /ads/:id/stats`).
+۳. توجه: `AdService.submit()` فقط موجودی رو در لحظه‌ی submit چک می‌کنه، بودجه رو reserve/قفل نمی‌کنه — جزئیات و ریسکش در `docs/DECISIONS.md` ADR-010 و `TODO.md` (فاز ۴) ثبت شده؛ راه‌حل نهایی باید همراه فاز ۵ طراحی بشه.
+۴. طبق قانون‌های خودکار (`docs/DECISIONS.md`)، هر تصمیم مهم رو ثبت کن؛ فقط برای credential واقعی/production/تغییر بنیادین معماری متوقف شو.

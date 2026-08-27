@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AdModule } from "./ad/ad.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtCoreModule } from "./auth/jwt-core.module";
 import { ConfigModule } from "./config/config.module";
@@ -16,6 +17,7 @@ import { WalletModule } from "./wallet/wallet.module";
     WalletModule,
     UserModule,
     AuthModule,
+    AdModule,
   ],
 })
 export class AppModule {}

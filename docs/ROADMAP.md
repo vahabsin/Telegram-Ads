@@ -38,7 +38,7 @@
 - [x] تست: منطق قیمت‌گذاری Stars، تجزیه‌ی payload، و اعتبارسنجی کیف‌پول یونیت‌تست شدن؛ مسیر کامل زنده (پرداخت واقعی داخل تلگرام) در این sandbox قابل اجرا نبود (شبکه مسدود + عدم دسترسی به کلاینت واقعی تلگرام) — TODO.md
 
 ## فاز ۴ — ساخت تبلیغ (Wizard کامل)
-- [ ] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM)
+- [~] فرم چندمرحله‌ای طبق PRD بخش ۲.۳ (Placement -> عنوان -> Targeting -> Creative -> بودجه/CPM) — فقط DTO های Zod مشترک (`packages/shared-types/src/ad.ts`) و فیلد schema `Ad.initialStatusChoice` (بدون migration) آماده‌ست؛ فرم UI، AdModule بک‌اند، و migration هنوز مونده
 - [ ] آپلود تصویر/ویدیو (ذخیره در S3-compatible storage یا local volume در فاز اول)
 - [ ] کامپوننت پیش‌نمایش زنده‌ی تبلیغ (شبیه‌ساز کارت Ad تلگرام)
 - [ ] اعتبارسنجی سمت سرور کامل فرم (Zod DTO مشترک با بک‌اند)
@@ -89,4 +89,12 @@
 ---
 
 ### وضعیت کلی فعلی
-فاز ۰ کامل شد. منتظر تأیید صریح کاربر برای شروع فاز ۱ (دیتابیس و هسته‌ی بک‌اند) هستیم.
+فازهای ۰ تا ۳ کامل و push شده. فاز ۴ شروع شده ولی نصفه‌کاره (نقطه‌ی دقیق ادامه در پایین همین بخش، بعد از تأیید کاربر برای ادامه از سشن قبل).
+
+**نقطه‌ی دقیق شروع مجدد فاز ۴:**
+۱. `cd packages/database` و `DATABASE_URL=postgresql://tgads:tgads_dev_password@localhost:5434/tgads npx prisma migrate dev --name add_ad_initial_status_choice` را اجرا کن (این migration قبلاً یک‌بار توسط کاربر رد شد چون سشن داشت می‌بست؛ الان که ادامه می‌دی طبیعیه که اجراش کنی، مگر کاربر چیز دیگه‌ای بگه).
+۲. بعد `apps/api/src/ad/` بساز: `AdModule` + `AdService` (create/update/submit/list/stats) + `AdController` طبق endpoint های `docs/ARCHITECTURE.md` بخش ۵ (`POST /ads`, `PATCH /ads/:id`, `POST /ads/:id/submit`, `GET /ads`, `GET /ads/:id/stats`).
+۳. در `submit()`: چک موجودی کیف‌پول با `WalletService.getBalanceCoins` قبل از `budgetTotalCoins`؛ اگه ناکافی بود پیام واضح + راهنمایی به شارژ حساب.
+۴. آپلود عکس/ویدیو: local disk volume (نه S3) طبق یادداشت ARCHITECTURE برای فاز اول — احتمالاً یک ماژول Upload جدا با multer.
+۵. سمت `apps/miniapp`: کامپوننت ویزارد ۵ مرحله‌ای + پیش‌نمایش زنده‌ی کارت تبلیغ + صفحه‌ی «تبلیغ‌های من».
+۶. طبق قانون‌های خودکار (`docs/DECISIONS.md`)، هر تصمیم مهم رو ثبت کن؛ فقط برای credential واقعی/production/تغییر بنیادین معماری متوقف شو.

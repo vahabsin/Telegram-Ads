@@ -76,3 +76,12 @@ Telegram Stars (XTR) need a coins-per-Star conversion to price a deposit invoice
 `docs/ARCHITECTURE.md` says `apps/miniapp` should be "سازگار با Telegram WebApp SDK" without naming a specific npm package. Used the official `<script src="https://telegram.org/js/telegram-web-app.js">` (per Telegram's own docs) plus a small hand-written ambient type + wrapper (`src/telegram.ts`), instead of a third-party wrapper package like `@twa-dev/sdk` - avoids picking an unlisted dependency for something the official script already covers.
 
 Phase 3 only needs two screens (Dashboard, Wallet), so view switching is a local `useState` in `App.tsx` rather than pulling in `react-router` (not mentioned in `docs/ARCHITECTURE.md`). Revisit once phase 4's ad wizard needs real multi-step routing/deep-linking.
+
+## ADR-009: `Ad.initialStatusChoice` field (additive schema change)
+
+**Date:** 2026-08-27
+**Phase:** 4 (WIP - schema edited, migration not yet applied)
+
+`docs/PRD.md` section 2.3 step 5 requires the advertiser to choose, at ad-creation time, whether an approved ad goes straight to `ACTIVE` or starts `PAUSED` waiting for manual activation. `docs/ARCHITECTURE.md`'s (explicitly summarized) `Ad` schema has no field for this - `status` itself becomes `PENDING_REVIEW` on submit regardless, and nothing preserved the advertiser's original choice for the admin-approval step (phase 6) to read back. Added a new nullable-by-default enum `AdInitialStatusChoice { ACTIVE PAUSED }` and `Ad.initialStatusChoice` (`@default(ACTIVE)`) to `schema.prisma` - purely additive, no existing column changed or removed, so it doesn't conflict with anything ARCHITECTURE.md specifies.
+
+**Status:** schema.prisma edited and committed; `prisma migrate dev` has **not** run yet (interrupted before execution) - nothing in the codebase references this field/enum yet, so leaving it unmigrated for now doesn't break anything. Next session should run the migration before writing `AdService` (see `docs/ROADMAP.md` phase 4 resume point).
